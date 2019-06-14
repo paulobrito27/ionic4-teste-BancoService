@@ -1,0 +1,41 @@
+<ion-content padding>
+  <h1 text-center>
+    <ion-icon name="done-all" color="primary" class="icon-7em"></ion-icon>
+  </h1>
+
+
+  <form [formGroup]="autenticaForm" (submit)="onSubmit()">
+
+    <ion-item>
+      <ion-icon name="md-person" color="primary" slot="start"></ion-icon>
+      <ion-input type="text" placeholder="Nome" formControlName="nome" inputmode="text" autofocus="true">
+      </ion-input>
+      <ion-note slot="end" color="range" *ngIf="nome.dirty && nome.hasError('required')">Item exigido</ion-note>
+      <ion-note slot="end" color="range" *ngIf="nome.dirty && nome.hasError('minlength')">Min 3 caracteres</ion-note>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail" color="primary" slot="start"></ion-icon>
+      <ion-input type="email" placeholder="Email de destino" formControlName="email" inputmode="email">
+      </ion-input>
+      <ion-note slot="end" color="range" *ngIf="email.dirty && email.hasError('required')">Item exigido</ion-note>
+      <ion-note slot="end" color="range" *ngIf="email.dirty && email.hasError('email')">Email invalido</ion-note>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="md-finger-print" color="primary" slot="start"></ion-icon>
+      <ion-input type="text" placeholder="Registro" formControlName="registro"></ion-input>
+      <ion-note slot="end" color="range" *ngIf="registro.dirty && registro.hasError('required')">Item exigido</ion-note>
+      <ion-note slot="end" color="range" *ngIf="registro.dirty && registro.hasError('minlength')">Min 5 caracteres
+      </ion-note>
+    </ion-item>
+
+    <ion-button expand="block" color="primary" type="submit" [disabled]="autenticaForm.invalid">ACESSAR</ion-button>
+
+  </form>
+
+
+ <p>usuario: {{usuario.nome}} </p>
+<p>registro: {{usuario.registro}} </p>
+<p>email destino: {{usuario.email}} </p>
+</ion-content>

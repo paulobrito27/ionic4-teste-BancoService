@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { BancoService } from '../service/banco.service';
 
 @Component({
   selector: 'app-tab1',
@@ -6,7 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page {
-
-  constructor() {}
-
+  public usuario = new Array();
+  constructor(private bd: BancoService) {
+    this.bd.banco
+      .getItem('myitem')
+      .then(data => (this.usuario = data), error => console.error(error));
+  }
 }
