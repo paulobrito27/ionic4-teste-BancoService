@@ -3,9 +3,7 @@
     <ion-icon name="done-all" color="secondary" class="icon-7em"></ion-icon>
   </h1>
 
-
   <form [formGroup]="autenticaForm" (submit)="onSubmit()">
-
     <ion-item>
       <ion-icon name="md-person" color="secondary" slot="start"></ion-icon>
       <ion-input type="text" placeholder="Nome" formControlName="nome" inputmode="text" autofocus="true">
@@ -30,12 +28,28 @@
       </ion-note>
     </ion-item>
 
-    <ion-button expand="block" color="secondary" type="submit" [disabled]="autenticaForm.invalid">ACESSAR</ion-button>
+    <ion-button expand="block" color="secondary" type="submit" [disabled]="autenticaForm.invalid">CADASTRAR USUARIO
+    </ion-button>
 
   </form>
 
+    <ion-list lines="full">
+      <ion-item>
+        <ion-label >usuario: {{usuario.nome}}</ion-label>
+      </ion-item>
 
- <p>usuario: {{usuario.nome}} </p>
-<p>registro: {{usuario.registro}} </p>
-<p>email destino: {{usuario.email}} </p>
+      <ion-item>
+        <ion-label >registro: {{usuario.registro}}</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label >email destino: {{usuario.email}}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" color="secondary" (click)="acessar()">ACESSAR</ion-button>
+
+
+
+
 </ion-content>

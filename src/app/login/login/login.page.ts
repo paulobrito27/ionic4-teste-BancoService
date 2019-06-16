@@ -10,6 +10,7 @@ import { BancoService } from 'src/app/service/banco.service';
 })
 export class LoginPage implements OnInit {
   autenticaForm: FormGroup; // Utilizado para criar um formulario
+  autenticaForm2: FormGroup; // Utilizado para criar um formulario
   public usuario = new Array();
 
   // Dentro do construtor criado o FormBuilder que facilita o pocesso de criar instancias de FormGroup
@@ -17,6 +18,7 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.createForm();
+    this.createForm2();
     this.bd.banco
       .getItem('myitem')
       .then(data => (this.usuario = data), error => console.error(error));
@@ -30,6 +32,14 @@ export class LoginPage implements OnInit {
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       registro: ['', [Validators.required, Validators.minLength(5)]]
+    });
+  }
+
+  private createForm2(): void {
+    this.autenticaForm2 = this.fb.group({
+      nome: ['', [Validators.minLength(3)]],
+      email: ['', [Validators.email]],
+      registro: ['', [Validators.minLength(5)]]
     });
   }
 
@@ -49,6 +59,9 @@ export class LoginPage implements OnInit {
       .setItem('myitem', this.autenticaForm.value)
       .then(() => console.log('Stored item!'), error => console.error('Error storing item', error));
 
+    this.usuario = this.autenticaForm.value;
+  }
+  acessar(): void {
     this.nav.navigateForward('/tabs/tab1');
   }
 }
