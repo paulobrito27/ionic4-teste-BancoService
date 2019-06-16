@@ -8,6 +8,7 @@ import { FileChooser } from '@ionic-native/file-chooser/ngx';
 import { ToastController, AlertController } from '@ionic/angular';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
 import { File } from '@ionic-native/file/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 // -----------------------------------
 
 @Component({
@@ -30,7 +31,7 @@ export class Tab1Page {
   public usuario = new Array();
 
   constructor(
-    private bd: BancoService,
+    private bdUser: BancoService,
     private barcodeScanner: BarcodeScanner,
     private toastController: ToastController,
     private file: File,
@@ -38,8 +39,9 @@ export class Tab1Page {
     private actionSheet: ActionSheetController,
     private emailComposer: EmailComposer,
     private alertCtrl: AlertController,
+    private banco: NativeStorage
   ) {
-    this.bd.banco
+    this.bdUser.banco
       .getItem('myitem')
       .then(data => (this.usuario = data), error => console.error(error));
   }
@@ -130,28 +132,28 @@ export class Tab1Page {
                         });
                       });
                       // -----------------------------GRAVANDO LISTA NO STORAGE------------------------------------------------------
-                      this.bd.banco
+                      this.banco
                         .setItem('LISTA', this.lista)
                         .then(
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
 
-                      this.bd.banco
+                      this.banco
                         .setItem('ROMANEIO', this.romaneio)
                         .then(
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
 
-                      this.bd.banco
+                      this.banco
                         .setItem('ALMOXARIFADO', this.almoxarifado)
                         .then(
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
 
-                      this.bd.banco
+                      this.banco
                         .setItem('EMPREITEIRA', this.empreiteira)
                         .then(
                           () => console.log('Stored item!'),
@@ -212,7 +214,7 @@ export class Tab1Page {
                     this.materialgediss.splice(0, tama);
 
                     // zera os Storages--------------------------------------------------------------
-                    this.bd.banco.clear();
+                    this.banco.clear();
                   }
                 }
               ]
@@ -561,27 +563,27 @@ export class Tab1Page {
           role: 'destructive',
           handler: () => {
             // -----------------------------------RECARREGA ÚLTIMA ATUALIZAÇÃO DA LISTA NO STORAGE-------------------------
-            this.bd.banco
+            this.banco
               .getItem('LISTA')
               .then(data => (this.lista = data), error => console.error(error));
 
-            this.bd.banco
+            this.banco
               .getItem('SERIE')
               .then(data => (this.materialSeries = data), error => console.error(error));
 
-            this.bd.banco
+            this.banco
               .getItem('GEDIS')
               .then(data => (this.materialgediss = data), error => console.error(error));
 
-            this.bd.banco
+            this.banco
               .getItem('ROMANEIO')
               .then(data => (this.romaneio = data), error => console.error(error));
 
-            this.bd.banco
+            this.banco
               .getItem('ALMOXARIFADO')
               .then(data => (this.almoxarifado = data), error => console.error(error));
 
-            this.bd.banco
+            this.banco
               .getItem('EMPREITEIRA')
               .then(data => (this.empreiteira = data), error => console.error(error));
 
@@ -732,7 +734,7 @@ export class Tab1Page {
 
                               // -----gravando alteração no storage----------------------------------------------------------
 
-                              this.bd.banco
+                              this.banco
                                 .setItem('LISTA', this.lista)
                                 .then(
                                   () => console.log('Stored item!'),
@@ -740,7 +742,7 @@ export class Tab1Page {
                                 );
                               // ---------------------------------------------------------------------------------------------
                               // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
-                              this.bd.banco
+                              this.banco
                                 .setItem('GEDIS', this.materialgediss)
                                 .then(
                                   () => console.log('Stored item!'),
@@ -774,12 +776,12 @@ export class Tab1Page {
 
                                       // -----gravando alteração no storage----------------------------------------------------------
 
-                                      this.bd.banco
+                                      this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
                                       // ---------------------------------------------------------------------------------------------
                                       // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
-                                      this.bd.banco
+                                      this.banco
                                         .setItem('GEDIS', this.materialgediss)
                                         .then(() => console.log('Stored item!'));
                                       // fim teste storage----------------------------------------------------------------
@@ -861,12 +863,12 @@ export class Tab1Page {
 
                                     // -----gravando alteração no storage----------------------------------------------------------
 
-                                    this.bd.banco
+                                    this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
                                     //---------------------------------------------------------------------------------------------
                                     //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
-                                    this.bd.banco
+                                    this.banco
                                       .setItem('GEDIS', this.materialgediss)
                                       .then(() => console.log('Stored item!'));
                                     // fim teste storage------------------------------------
@@ -937,7 +939,7 @@ export class Tab1Page {
                               repete = false;
                               alert('MATERIAL ' + element.codigo + ' SEPARADO COM SUCESSO!!!!');
                               // -----gravando alteração no storage
-                              this.bd.banco
+                              this.banco
                                 .setItem('LISTA', this.lista)
                                 .then(
                                   () => console.log('Stored item!'),
@@ -945,7 +947,7 @@ export class Tab1Page {
                                 );
                               // -------------------------------------------
                               // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
-                              this.bd.banco
+                              this.banco
                                 .setItem('SERIE', this.materialSeries)
                                 .then(
                                   () => console.log('Stored item!'),
@@ -976,12 +978,12 @@ export class Tab1Page {
                                       // impede que leia outro material com mesmo código
                                       repete = false;
                                       // ----gravando alteração no storage
-                                      this.bd.banco
+                                      this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
                                       // -------------------------------------------
                                       // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
-                                      this.bd.banco
+                                      this.banco
                                         .setItem('SERIE', this.materialSeries)
                                         .then(() => console.log('Stored item!'));
                                       // fim teste storage----------------------------------------------------------------
@@ -1060,12 +1062,12 @@ export class Tab1Page {
                                     repete = false;
 
                                     // -----gravando alteração no storage
-                                    this.bd.banco
+                                    this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
                                     // -------------------------------------------
                                     // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
-                                    this.bd.banco
+                                    this.banco
                                       .setItem('SERIE', this.materialSeries)
                                       .then(() => console.log('Stored item!'));
                                     // fim teste storage------------------------------------
@@ -1146,7 +1148,7 @@ export class Tab1Page {
                     });
 
                     // -----gravando alteração no storage
-                    this.bd.banco
+                    this.banco
                       .setItem('LISTA', this.lista)
                       .then(
                         () => console.log('Stored item!'),
@@ -1189,7 +1191,7 @@ export class Tab1Page {
                               }
                             });
                             // -----gravando alteração no storage
-                            this.bd.banco
+                            this.banco
                               .setItem('LISTA', this.lista)
                               .then(() => console.log('Stored item!'));
                           }
@@ -1291,7 +1293,7 @@ export class Tab1Page {
 
                           // -----gravando alteração no storage
 
-                          this.bd.banco
+                          this.banco
                             .setItem('LISTA', this.lista)
                             .then(
                               () => console.log('Stored item!'),
@@ -1336,7 +1338,7 @@ export class Tab1Page {
                                     }
                                   });
                                   // -----gravando alteração no storage
-                                  this.bd.banco
+                                  this.banco
                                     .setItem('LISTA', this.lista)
                                     .then(() => console.log('Stored item!'));
                                 }
@@ -1438,7 +1440,7 @@ export class Tab1Page {
             this.gediss.splice(0, tam);
 
             // grava lista storage
-            this.bd.banco.setItem('LISTA', this.lista).then(() => console.log('Stored item!'));
+            this.banco.setItem('LISTA', this.lista).then(() => console.log('Stored item!'));
           }
         }
       ]
@@ -1446,4 +1448,3 @@ export class Tab1Page {
     await alert.present();
   }
 }
-
