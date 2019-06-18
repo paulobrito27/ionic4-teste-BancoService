@@ -21,7 +21,8 @@ export class Tab1Page {
   public almoxarifado: string;
   public empreiteira: string;
   public lista = new Array();
-  public liberadoLeitura: Boolean = true;
+  public listaZerada = new Array();
+  public liberadoLeitura = true;
   public texto: string;
   public materialSeries = new Array();
   public materialgediss = new Array();
@@ -43,12 +44,12 @@ export class Tab1Page {
   ) {
     this.bdUser.banco
       .getItem('myitem')
-      .then(data => (this.usuario = data), error => console.error(error));
+      .then(data => (this.usuario.push(data) ), error => console.error(error));
   }
 
   // ------------------------------------
   public async opcoes() {
-    let action = await this.actionSheet.create({
+    const action = await this.actionSheet.create({
       header: 'OPÇÕES',
       buttons: [
         {
@@ -67,57 +68,57 @@ export class Tab1Page {
                     .then(value => {
                       this.texto = value;
                       // tratamento do texto para descobrir o Almoxarifado.
-                      let alm1 = this.texto.split('Almoxarifado');
-                      let alm2 = alm1[1].split('DIS');
+                      const alm1 = this.texto.split('Almoxarifado');
+                      const alm2 = alm1[1].split('DIS');
                       this.almoxarifado = alm2[0];
 
                       // tratamento do texto para descobrir o nome da empreiteira.
-                      let emp1 = this.texto.split('Empreiteira');
-                      let emp2 = emp1[1].split('Nro.');
+                      const emp1 = this.texto.split('Empreiteira');
+                      const emp2 = emp1[1].split('Nro.');
                       this.empreiteira = emp2[0];
 
                       // tratamento do texto para descobrir o numero do romaneio.
-                      let rom1 = this.texto.split('Nro.');
-                      let rom2 = rom1[1];
-                      let rom3 = rom2.split(' ');
-                      let rom4 = rom3[2].split('D');
+                      const rom1 = this.texto.split('Nro.');
+                      const rom2 = rom1[1];
+                      const rom3 = rom2.split(' ');
+                      const rom4 = rom3[2].split('D');
                       this.romaneio = rom4[0];
 
                       // começo do tratamento para pegar apenas os materiais liberados.
 
-                      let ped1: string[] = this.texto.split('Peso|');
-                      let ped2: string = ped1[1];
-                      let novo: string = ped2.replace(/\s/g, '#');
-                      let novo2: string[] = novo.split('--##|#');
-                      let novo3: string = novo2[1];
-                      let ped3: string[] = novo3.split('#|##|#');
+                      const ped1: string[] = this.texto.split('Peso|');
+                      const ped2: string = ped1[1];
+                      const novo: string = ped2.replace(/\s/g, '#');
+                      const novo2: string[] = novo.split('--##|#');
+                      const novo3: string = novo2[1];
+                      const ped3: string[] = novo3.split('#|##|#');
 
                       // neste ponto temos todos os materiais gravados na variavel ped3. Vamos continuar o tratamento.
                       let linha: string[];
 
                       // tratamento de pontos e virgulas
                       ped3.forEach(element => {
-                        let linha2 = element.replace(/#/g, ' ');
+                        const linha2 = element.replace(/#/g, ' ');
                         linha = linha2.split('|');
-                        let corrigePonto = linha[5].replace('.', '');
-                        let corrigePonto2 = linha[3].replace('.', '');
-                        let corrige: string[] = corrigePonto.split(',');
-                        let corrige2: string[] = corrigePonto2.split(',');
+                        const corrigePonto = linha[5].replace('.', '');
+                        const corrigePonto2 = linha[3].replace('.', '');
+                        const corrige: string[] = corrigePonto.split(',');
+                        const corrige2: string[] = corrigePonto2.split(',');
 
                         let linhaCorrigida: string;
                         let linhaCorrigida2: string;
 
-                        if (corrige[1] == '000 ') {
+                        if (corrige[1] === '000 ') {
                           linhaCorrigida = corrige[0];
                         } else {
-                          let numero: any = corrige[0] + '.' + corrige[1];
+                          const numero: any = corrige[0] + '.' + corrige[1];
                           linhaCorrigida = numero;
                         }
 
-                        if (corrige2[1] == '000 ') {
+                        if (corrige2[1] === '000 ') {
                           linhaCorrigida2 = corrige2[0];
                         } else {
-                          let numero: any = corrige2[0] + '.' + corrige2[1];
+                          const numero: any = corrige2[0] + '.' + corrige2[1];
                           linhaCorrigida2 = numero;
                         }
 
@@ -161,6 +162,9 @@ export class Tab1Page {
                         );
 
                       // fim teste storage----------------------------------------------------------------
+                      this.banco
+                        .getItem('LISTA')
+                        .then(data => (this.lista = data), error => console.error(error));
 
                       this.liberadoLeitura = false;
                     })
@@ -183,34 +187,36 @@ export class Tab1Page {
           icon: 'trash',
           role: 'destructive',
           handler: async () => {
-            //-----inicio do alert---
-            let alert = await this.alertCtrl.create({
+            // -----inicio do alert---
+            const alert = await this.alertCtrl.create({
               header: 'CONFIRMAÇÃO DE ZERAR LISTA',
               message:
                 'Você tem certeza de que deseja zerar a listagem? Todos os materiais e a contagem serão perdidos permanentemente.',
               buttons: [
-                //---botao 1
+                // ---botao 1
                 {
                   text: 'CANCELAR',
                   role: 'calcel',
                   handler: () => {}
                 },
-                //---botao 2
+                // ---botao 2
                 {
                   text: 'CONFIRMAR',
                   role: 'calcel',
                   handler: () => {
-                    let tamanho: number = this.lista.length;
-                    this.lista.splice(0, tamanho);
+                    this.lista = this.listaZerada;
 
                     this.romaneio = '';
+                    this.empreiteira = '';
+                    this.almoxarifado = '';
+
 
                     this.liberadoLeitura = true;
 
-                    let tam: number = this.materialSeries.length;
+                    const tam: number = this.materialSeries.length;
                     this.materialSeries.splice(0, tam);
 
-                    let tama: number = this.materialgediss.length;
+                    const tama: number = this.materialgediss.length;
                     this.materialgediss.splice(0, tama);
 
                     // zera os Storages--------------------------------------------------------------
@@ -228,11 +234,11 @@ export class Tab1Page {
           icon: 'ios-send-outline',
           role: 'destructive',
           handler: async () => {
-            let contagemTerminada: boolean = true;
-            let materialDivergente = new Array();
+            let contagemTerminada = true;
+            const materialDivergente = new Array();
 
             this.lista.forEach(element => {
-              if (element.quantidade != 0) {
+              if (element.quantidade !== 0) {
                 contagemTerminada = false;
                 materialDivergente.push(element);
               }
@@ -240,9 +246,9 @@ export class Tab1Page {
 
             if (contagemTerminada) {
               // trabalhando com a promisse do materialSeries
-              let temMatSerie: number = this.materialSeries.length;
+              const temMatSerie: number = this.materialSeries.length;
               let mensagemNovaSeries: string;
-              let temMatGedis: number = this.materialgediss.length;
+              const temMatGedis: number = this.materialgediss.length;
               let mensagemNovaGedis: string;
               let mensagemMateriaisTotaisSeparados: string;
               let materiaisLidosManualmente: string;
@@ -252,7 +258,7 @@ export class Tab1Page {
                   this.mensagem.push(
                     '\n------------SERIES-----------------\nCódigo: ' + element.codigo + ' .\n'
                   );
-                  let mensSerie = element.series.split(',');
+                  const mensSerie = element.series.split(',');
                   mensSerie.forEach(element2 => {
                     this.mensagem.push(element2 + '\n');
                   });
@@ -260,7 +266,8 @@ export class Tab1Page {
                 // transforma um array em uma única string para ser enviado pelo email
                 mensagemNovaSeries = this.mensagem.join(' ');
                 // zera mensagem
-                let tam: number = this.mensagem.length;
+                // tslint:disable-next-line: no-shadowed-variable
+                const tam: number = this.mensagem.length;
                 this.mensagem.splice(0, tam);
               }
 
@@ -273,7 +280,7 @@ export class Tab1Page {
                       element.codigo +
                       ' .\n\n'
                   );
-                  let mensGedis = element.gedis.split(',');
+                  const mensGedis = element.gedis.split(',');
                   mensGedis.forEach(element2 => {
                     this.mensagem.push(element2 + '\n');
                   });
@@ -281,7 +288,8 @@ export class Tab1Page {
                 // transforma um array em uma única string para ser enviado pelo email
                 mensagemNovaGedis = this.mensagem.join(' ');
                 // zera mensagem
-                let tam: number = this.mensagem.length;
+                // tslint:disable-next-line: no-shadowed-variable
+                const tam: number = this.mensagem.length;
                 this.mensagem.splice(0, tam);
               }
 
@@ -304,6 +312,7 @@ export class Tab1Page {
 
               // trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
               this.lista.forEach(element => {
+                // tslint:disable-next-line: triple-equals
                 if (element.lidoManual == true) {
                   this.mensagem.push(
                     '\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual'
@@ -317,17 +326,24 @@ export class Tab1Page {
               this.mensagem.splice(0, tam);
 
               // tratando gedis e series vazios
+              // tslint:disable-next-line: triple-equals
               if (mensagemNovaSeries == undefined) {
                 mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
               }
+              // tslint:disable-next-line: triple-equals
               if (mensagemNovaGedis == undefined) {
                 mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
               }
+              // tslint:disable-next-line: triple-equals
               if (materiaisLidosManualmente == undefined) {
                 materiaisLidosManualmente = '\n\nTodos os materiais foram lidos pelo QR-CODE.';
               }
 
               // função de envio de email.....................................
+              this.emailComposer.isAvailable().then((available: boolean) => {
+                if (available) {
+                }
+              });
               let email = {
                 to: this.usuario[0].email,
                 cc: '',
@@ -338,7 +354,7 @@ export class Tab1Page {
                   this.romaneio +
                   '  separado com sucesso ' +
                   ' Colaborador: ' +
-                  this.usuario[0].usuario +
+                  this.usuario[0].nome +
                   '\n' +
                   ' Registro: ' +
                   this.usuario[0].registro,
@@ -354,36 +370,39 @@ export class Tab1Page {
                   mensagemNovaGedis +
                   '\n\n\n\nMateriais lidos de forma manual:\n' +
                   materiaisLidosManualmente,
-                isHtml: false,
-                app: 'Gmail'
+                isHtml: true
               };
               this.emailComposer.open(email);
+
               // fim função email....................................................
             } else {
               // ----------------------------- ENVIA EMAIL SEM TERMINO--------------------------------------------
-              let alert = await this.alertCtrl.create({
+              const alert = await this.alertCtrl.create({
                 header: 'OS PEDIDOS DESSE ROMANEIO NÃO ESTÃO ZERADOS',
                 message:
+                  // tslint:disable-next-line: max-line-length
                   'Você tem certeza de que deseja enviar email sem término da contagem? Existem materiais que  foram separados em quantidades diferentes a do romaneio.',
                 buttons: [
-                  //---botao 1
+                  // ---botao 1
                   {
                     text: 'CANCELAR',
                     role: 'calcel',
                     handler: () => {}
                   },
-                  //---botao 2
+                  // ---botao 2
                   {
                     text: 'CONFIRMAR',
                     role: 'calcel',
                     handler: () => {
                       // trabalhando com a promisse do materialSeries
-                      let temMatSerie: number = this.materialSeries.length;
+                      const temMatSerie: number = this.materialSeries.length;
                       let mensagemNovaSeries: string;
-                      let temMatGedis: number = this.materialgediss.length;
+                      const temMatGedis: number = this.materialgediss.length;
                       let mensagemNovaGedis: string;
-                      let mensagem_Material_inferior;
-                      let mensagem_Material_superior;
+                      // tslint:disable-next-line: variable-name
+                      let mensagem_Material_inferior: string;
+                      // tslint:disable-next-line: variable-name
+                      let mensagem_Material_superior: string;
                       let mensagemMateriaisTotaisSeparados: string;
                       let materiaisLidosManualmente: string;
 
@@ -394,7 +413,7 @@ export class Tab1Page {
                               element.codigo +
                               ' .\n'
                           );
-                          let mensSerie = element.series.split(',');
+                          const mensSerie = element.series.split(',');
                           mensSerie.forEach(element2 => {
                             this.mensagem.push(element2 + '\n');
                           });
@@ -402,7 +421,8 @@ export class Tab1Page {
                         // transforma um array em uma única string para ser enviado pelo email
                         mensagemNovaSeries = this.mensagem.join(' ');
                         // zera mensagem
-                        let tam: number = this.mensagem.length;
+                        // tslint:disable-next-line: no-shadowed-variable
+                        const tam: number = this.mensagem.length;
                         this.mensagem.splice(0, tam);
                       }
 
@@ -415,7 +435,7 @@ export class Tab1Page {
                               element.codigo +
                               ' .\n\n'
                           );
-                          let mensGedis = element.gedis.split(',');
+                          const mensGedis = element.gedis.split(',');
                           mensGedis.forEach(element2 => {
                             this.mensagem.push(element2 + '\n');
                           });
@@ -423,12 +443,14 @@ export class Tab1Page {
                         // transforma um array em uma única string para ser enviado pelo email
                         mensagemNovaGedis = this.mensagem.join(' ');
                         // zera mensagem
-                        let tam: number = this.mensagem.length;
+                        // tslint:disable-next-line: no-shadowed-variable
+                        const tam: number = this.mensagem.length;
                         this.mensagem.splice(0, tam);
                       }
 
                       // trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
                       this.lista.forEach(element => {
+                        // tslint:disable-next-line: triple-equals
                         if (element.lidoManual == true) {
                           this.mensagem.push(
                             '\n\n' +
@@ -446,12 +468,15 @@ export class Tab1Page {
                       this.mensagem.splice(0, tam);
 
                       // tratando gedis e series vazios
+                      // tslint:disable-next-line: triple-equals
                       if (mensagemNovaSeries == undefined) {
                         mensagemNovaSeries = '\nNão existem materiais que tenham n° de série\n\n';
                       }
+                      // tslint:disable-next-line: triple-equals
                       if (mensagemNovaGedis == undefined) {
                         mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis\n\n\n';
                       }
+                      // tslint:disable-next-line: triple-equals
                       if (materiaisLidosManualmente == undefined) {
                         materiaisLidosManualmente =
                           '\n\nTodos os materiais foram lidos pelo QR-CODE.';
@@ -513,6 +538,11 @@ export class Tab1Page {
                       this.mensagem.splice(0, tam);
 
                       // função de envio de email.....................................
+                      // HABILITA EMAIL
+                      this.emailComposer.isAvailable().then((available: boolean) => {
+                        if (available) {
+                        }
+                      });
                       let email = {
                         to: this.usuario[0].email,
                         cc: '',
@@ -523,7 +553,7 @@ export class Tab1Page {
                           this.romaneio +
                           ' COM DIVERGÊNCIAS ' +
                           ' Colaborador: ' +
-                          this.usuario[0].usuario +
+                          this.usuario[0].nome +
                           '\n' +
                           ' Registro: ' +
                           this.usuario[0].registro,
@@ -546,6 +576,7 @@ export class Tab1Page {
                         app: 'Gmail'
                       };
                       this.emailComposer.open(email);
+
                       // fim função email....................................................
                     }
                   }
