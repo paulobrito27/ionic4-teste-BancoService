@@ -19,7 +19,7 @@ export class LoginPage implements OnInit {
     this.createForm();
 
     this.bd.banco
-      .getItem('myitem')
+      .getItem('usuario')
       .then(data => (this.usuario = data), error => console.error(error));
   }
   // Validators.required(serve para informar que o item e' obrigatorio )
@@ -49,7 +49,7 @@ export class LoginPage implements OnInit {
   onSubmit(): void {
     console.log(' autenticaForm: ', this.autenticaForm.value);
     this.bd.banco
-      .setItem('myitem', this.autenticaForm.value)
+      .setItem('usuario', this.autenticaForm.value)
       .then(() => console.log('Stored item!'), error => console.error('Error storing item', error));
 
     this.usuario = this.autenticaForm.value;

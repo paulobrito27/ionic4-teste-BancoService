@@ -30,6 +30,8 @@ export class Tab1Page {
   public gediss = new Array();
   public mensagem = new Array();
   public usuario = new Array();
+  public textoBuscar = '';
+  public listaTela = new Array();
 
   constructor(
     private bdUser: BancoService,
@@ -43,8 +45,8 @@ export class Tab1Page {
     private banco: NativeStorage
   ) {
     this.bdUser.banco
-      .getItem('myitem')
-      .then(data => (this.usuario.push(data) ), error => console.error(error));
+      .getItem('usuario')
+      .then(data => this.usuario.push(data), error => console.error(error));
   }
 
   // ------------------------------------
@@ -132,6 +134,8 @@ export class Tab1Page {
                           lidoManual: false
                         });
                       });
+
+                      this.listaTela = this.lista; // faz com que a lista a ser exibida seja criada
                       // -----------------------------GRAVANDO LISTA NO STORAGE------------------------------------------------------
                       this.banco
                         .setItem('LISTA', this.lista)
@@ -160,12 +164,7 @@ export class Tab1Page {
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
-
                       // fim teste storage----------------------------------------------------------------
-                      this.banco
-                        .getItem('LISTA')
-                        .then(data => (this.lista = data), error => console.error(error));
-
                       this.liberadoLeitura = false;
                     })
                     .catch(async err => {
@@ -205,11 +204,10 @@ export class Tab1Page {
                   role: 'calcel',
                   handler: () => {
                     this.lista = this.listaZerada;
-
+                    this.listaTela = this.listaZerada;
                     this.romaneio = '';
                     this.empreiteira = '';
                     this.almoxarifado = '';
-
 
                     this.liberadoLeitura = true;
 
@@ -220,7 +218,23 @@ export class Tab1Page {
                     this.materialgediss.splice(0, tama);
 
                     // zera os Storages--------------------------------------------------------------
-                    this.banco.clear();
+                    this.banco
+                      .setItem('LISTA', this.lista)
+                      .then(() => console.log('Stored item!'), error => console.log(error));
+
+                    this.banco
+                      .setItem('ROMANEIO', this.romaneio)
+                      .then(() => console.log('Stored item!'), error => console.log(error));
+
+                    this.banco
+                      .setItem('ALMOXARIFADO', this.almoxarifado)
+                      .then(() => console.log('Stored item!'), error => console.log(error));
+
+                    this.banco
+                      .setItem('EMPREITEIRA', this.empreiteira)
+                      .then(() => console.log('Stored item!'), error => console.log(error));
+
+                    // fim teste storage----------------------------------------------------------------
                   }
                 }
               ]
@@ -618,6 +632,8 @@ export class Tab1Page {
               .getItem('EMPREITEIRA')
               .then(data => (this.empreiteira = data), error => console.error(error));
 
+            this.listaTela = this.lista;
+
             // -----------------------------------------------FIM RECARREGA STORAGE-------------------------------------------------------
           }
         },
@@ -771,6 +787,7 @@ export class Tab1Page {
                                   () => console.log('Stored item!'),
                                   error => alert('Lista não gravada na memória interna -> ' + error)
                                 );
+                                this.listaTela = this.lista;
                               // ---------------------------------------------------------------------------------------------
                               // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                               this.banco
@@ -810,6 +827,7 @@ export class Tab1Page {
                                       this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
+                                        this.listaTela = this.lista;
                                       // ---------------------------------------------------------------------------------------------
                                       // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                                       this.banco
@@ -897,6 +915,7 @@ export class Tab1Page {
                                     this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
+                                      this.listaTela = this.lista;
                                     //---------------------------------------------------------------------------------------------
                                     //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                                     this.banco
@@ -976,6 +995,7 @@ export class Tab1Page {
                                   () => console.log('Stored item!'),
                                   error => alert('Lista não gravada na memória interna -> ' + error)
                                 );
+                                this.listaTela = this.lista;
                               // -------------------------------------------
                               // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                               this.banco
@@ -1012,6 +1032,7 @@ export class Tab1Page {
                                       this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
+                                        this.listaTela = this.lista;
                                       // -------------------------------------------
                                       // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                                       this.banco
@@ -1096,6 +1117,7 @@ export class Tab1Page {
                                     this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
+                                      this.listaTela = this.lista;
                                     // -------------------------------------------
                                     // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                                     this.banco
@@ -1185,6 +1207,7 @@ export class Tab1Page {
                         () => console.log('Stored item!'),
                         error => alert('Lista não gravada na memória interna -> ' + error)
                       );
+                      this.listaTela = this.lista;
                     // -------------------------------------------
                   }
 
@@ -1225,6 +1248,7 @@ export class Tab1Page {
                             this.banco
                               .setItem('LISTA', this.lista)
                               .then(() => console.log('Stored item!'));
+                              this.listaTela = this.lista;
                           }
                         }
                       ]
@@ -1330,6 +1354,7 @@ export class Tab1Page {
                               () => console.log('Stored item!'),
                               error => alert('Lista não gravada na memória interna -> ' + error)
                             );
+                            this.listaTela = this.lista;
                         }
                         // -------------------------------------------------------------------------------
                         /// inicio qtd clicado maior q do qr so com codigo e qtd
@@ -1372,6 +1397,7 @@ export class Tab1Page {
                                   this.banco
                                     .setItem('LISTA', this.lista)
                                     .then(() => console.log('Stored item!'));
+                                    this.listaTela = this.lista;
                                 }
                               }
                             ]
@@ -1472,10 +1498,22 @@ export class Tab1Page {
 
             // grava lista storage
             this.banco.setItem('LISTA', this.lista).then(() => console.log('Stored item!'));
+            this.listaTela = this.lista;
           }
         }
       ]
     });
     await alert.present();
+  }
+
+  public busca(ev: any): void {
+    this.listaTela = this.lista;
+    const val = ev.target.value;
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() !== '') {
+      this.listaTela = this.lista.filter(item => {
+        return item.nome.toLowerCase().indexOf(val.toLowerCase()) > -1;
+      });
+    }
   }
 }

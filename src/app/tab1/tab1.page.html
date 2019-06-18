@@ -5,26 +5,17 @@
     </ion-buttons>
     <ion-title>Separação de materiais</ion-title>
   </ion-toolbar>
+  <ion-toolbar color="secondary" >
+
+    <ion-searchbar showCancelButton cancelButtonText="Custom Cancel" placeholder="Buscar material..."
+      animated  (ionInput)="busca( $event ) "></ion-searchbar>
+
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-
-  <ion-list lines="full">
-    <ion-item>
-      <ion-label>Empreiteira: {{empreiteira}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Almox: {{almoxarifado}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Romaneio: {{romaneio}} </ion-label>
-    </ion-item>
-
-  </ion-list>
-
-  <ion-virtual-scroll [items]="lista">
-    <ion-card *virtualItem="let item;">
-
+  <ion-virtual-scroll [items]="listaTela">
+    <ion-card *virtualItem="let item ">
       <ion-list lines="none">
         <ion-item color="medium ">
           <ion-label>
