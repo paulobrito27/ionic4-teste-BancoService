@@ -47,6 +47,19 @@ export class Tab1Page {
     this.bdUser.banco
       .getItem('usuario')
       .then(data => this.usuario.push(data), error => console.error(error));
+
+    this.listaTela = [
+      {
+        prateleira: 'aaaaaaaa',
+        nome: 'chave',
+        codigo: "222222222",
+        quantidade: 5,
+        qtd_estoqueTotal: 200
+      }
+    ];
+
+    this.romaneio = 'romaneio';
+    this.empreiteira = 'empreiteira';
   }
 
   // ------------------------------------
@@ -787,7 +800,7 @@ export class Tab1Page {
                                   () => console.log('Stored item!'),
                                   error => alert('Lista não gravada na memória interna -> ' + error)
                                 );
-                                this.listaTela = this.lista;
+                              this.listaTela = this.lista;
                               // ---------------------------------------------------------------------------------------------
                               // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                               this.banco
@@ -827,7 +840,7 @@ export class Tab1Page {
                                       this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
-                                        this.listaTela = this.lista;
+                                      this.listaTela = this.lista;
                                       // ---------------------------------------------------------------------------------------------
                                       // -----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                                       this.banco
@@ -915,7 +928,7 @@ export class Tab1Page {
                                     this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
-                                      this.listaTela = this.lista;
+                                    this.listaTela = this.lista;
                                     //---------------------------------------------------------------------------------------------
                                     //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
                                     this.banco
@@ -995,7 +1008,7 @@ export class Tab1Page {
                                   () => console.log('Stored item!'),
                                   error => alert('Lista não gravada na memória interna -> ' + error)
                                 );
-                                this.listaTela = this.lista;
+                              this.listaTela = this.lista;
                               // -------------------------------------------
                               // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                               this.banco
@@ -1032,7 +1045,7 @@ export class Tab1Page {
                                       this.banco
                                         .setItem('LISTA', this.lista)
                                         .then(() => console.log('Stored item!'));
-                                        this.listaTela = this.lista;
+                                      this.listaTela = this.lista;
                                       // -------------------------------------------
                                       // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                                       this.banco
@@ -1117,7 +1130,7 @@ export class Tab1Page {
                                     this.banco
                                       .setItem('LISTA', this.lista)
                                       .then(() => console.log('Stored item!'));
-                                      this.listaTela = this.lista;
+                                    this.listaTela = this.lista;
                                     // -------------------------------------------
                                     // -----------------------------GRAVANDO MaterialSeries NO STORAGE--------------------------------
                                     this.banco
@@ -1207,7 +1220,7 @@ export class Tab1Page {
                         () => console.log('Stored item!'),
                         error => alert('Lista não gravada na memória interna -> ' + error)
                       );
-                      this.listaTela = this.lista;
+                    this.listaTela = this.lista;
                     // -------------------------------------------
                   }
 
@@ -1248,7 +1261,7 @@ export class Tab1Page {
                             this.banco
                               .setItem('LISTA', this.lista)
                               .then(() => console.log('Stored item!'));
-                              this.listaTela = this.lista;
+                            this.listaTela = this.lista;
                           }
                         }
                       ]
@@ -1270,11 +1283,11 @@ export class Tab1Page {
               }
             }
 
-            /// fim tem código e tem quantidade--------------------------------------------------------------------------------------------------------------
+            /// fim tem código e tem quantidade------------------------
           } else {
             if (codigoClicado.replace(/\s/g, '') == codigoQrcode) {
               /// inicio tem código e não tem quantidade
-              let alertQuantidade = await this.alertCtrl.create({
+              const alertQuantidade = await this.alertCtrl.create({
                 header: 'QUANTIDADE DO MATERIAL ' + codigoClicado,
                 message:
                   'Insira manualmente a quantidade do material . Atenção, faltam separar ' +
@@ -1282,7 +1295,7 @@ export class Tab1Page {
                   ' unidade(s)',
                 inputs: [
                   {
-                    name: 'quantiadde',
+                    name: 'quantiade',
                     placeholder: 'quantidade',
                     type: 'number'
                   }
@@ -1292,31 +1305,32 @@ export class Tab1Page {
                     text: 'confirmar',
                     role: 'cancel',
                     handler: async data => {
-                      let qtdDigitado: any = parseFloat(data.quantiadde);
+                      const qtdDigitado: any = parseFloat(data.quantiade);
+                      alert(data.quantidade);////apagar
 
                       if (qtdEstoqueTotal_clicado >= qtdDigitado) {
                         if (qtdClicado >= qtdDigitado) {
                           this.lista.forEach(async element => {
                             if (
-                              element.codigo.replace(/\s/g, '') == codigoQrcode &&
-                              element.prateleira.replace(/\s/g, '') == prateleira_clicada
+                              element.codigo.replace(/\s/g, '') === codigoQrcode &&
+                              element.prateleira.replace(/\s/g, '') === prateleira_clicada
                             ) {
-                              let valorNovo: number = element.quantidade - qtdDigitado;
-                              let valorTotalSeparado: number = element.qtd_separada + qtdDigitado;
-                              let valorEstoqueNovo: number = element.qtd_estoqueTotal - qtdDigitado;
+                              const valorNovo: number = element.quantidade - qtdDigitado;
+                              const valorTotalSeparado: number = element.qtd_separada + qtdDigitado;
+                              const valorEstoqueNovo: number = element.qtd_estoqueTotal - qtdDigitado;
                               element.quantidade = valorNovo;
                               element.qtd_separada = valorTotalSeparado;
                               element.qtd_estoqueTotal = valorEstoqueNovo;
                               element.lidoManual = true;
 
-                              if (element.quantidade == 0) {
+                              if (element.quantidade === 0) {
                                 alert('MATERIAL ' + element.codigo + ' SEPARADO COM SUCESSO!!!!');
                                 repete = false;
                               }
 
                               if (element.quantidade > 0) {
                                 repete = false;
-                                let alert = await this.alertCtrl.create({
+                                const alert = await this.alertCtrl.create({
                                   header: element.nome,
                                   message: 'Faltam separar ' + element.quantidade + ' unidades',
                                   buttons: [
@@ -1354,13 +1368,13 @@ export class Tab1Page {
                               () => console.log('Stored item!'),
                               error => alert('Lista não gravada na memória interna -> ' + error)
                             );
-                            this.listaTela = this.lista;
+                          this.listaTela = this.lista;
                         }
                         // -------------------------------------------------------------------------------
                         /// inicio qtd clicado maior q do qr so com codigo e qtd
                         if (qtdClicado < qtdDigitado) {
                           repete = false;
-                          let alert = await this.alertCtrl.create({
+                          const alert = await this.alertCtrl.create({
                             header: codigoClicado,
                             message: 'Quantidade ultrapassa pedido',
                             buttons: [
@@ -1379,13 +1393,13 @@ export class Tab1Page {
                                 handler: () => {
                                   this.lista.forEach(element => {
                                     if (
-                                      element.codigo.replace(/\s/g, '') == codigoQrcode &&
-                                      element.prateleira.replace(/\s/g, '') == prateleira_clicada
+                                      element.codigo.replace(/\s/g, '') === codigoQrcode &&
+                                      element.prateleira.replace(/\s/g, '') === prateleira_clicada
                                     ) {
-                                      let valorNovo: number = element.quantidade - qtdDigitado;
-                                      let valorTotalSeparado: number =
+                                      const valorNovo: number = element.quantidade - qtdDigitado;
+                                      const valorTotalSeparado: number =
                                         element.qtd_separada + qtdDigitado;
-                                      let valorEstoqueNovo: number =
+                                      const valorEstoqueNovo: number =
                                         element.qtd_estoqueTotal - qtdDigitado;
                                       element.quantidade = valorNovo;
                                       element.qtd_separada = valorTotalSeparado;
@@ -1397,7 +1411,7 @@ export class Tab1Page {
                                   this.banco
                                     .setItem('LISTA', this.lista)
                                     .then(() => console.log('Stored item!'));
-                                    this.listaTela = this.lista;
+                                  this.listaTela = this.lista;
                                 }
                               }
                             ]
@@ -1505,6 +1519,11 @@ export class Tab1Page {
     });
     await alert.present();
   }
+
+  public mostra(item): void {
+    alert(item);
+  }
+
 
   public busca(ev: any): void {
     this.listaTela = this.lista;
