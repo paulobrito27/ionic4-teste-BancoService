@@ -31,6 +31,7 @@ export class Tab2Page {
   public mensagem = new Array();
   public usuario = new Array();
   public recontagem: boolean = false;
+  public listaTela = new Array();
 
   constructor(
     private barcodeScanner: BarcodeScanner,
@@ -44,9 +45,9 @@ export class Tab2Page {
     private banco: NativeStorage
   ) {
     this.bdUser.banco
-      .getItem('myitem')
+      .getItem('usuario')
       .then(data => (this.usuario = data), error => console.error(error));
-
+    /**
     this.lista2 = [
       {
         prateleira: 'aaaaaaaa',
@@ -70,6 +71,7 @@ export class Tab2Page {
         qtd_estoqueTotal: 200
       }
     ];
+     */
   }
 
   public async opcoes2() {
@@ -158,6 +160,7 @@ export class Tab2Page {
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
 
+                      this.listaTela = this.lista2;
                       this.banco
                         .setItem('ROMANEIO2', this.romaneio)
                         .then(
@@ -352,7 +355,7 @@ export class Tab2Page {
                   this.romaneio +
                   '  conferido com sucesso por ' +
                   'Colaborador: ' +
-                  this.usuario[0].usuario +
+                  this.usuario[0].nome +
                   '\n' +
                   'Registro: ' +
                   this.usuario[0].registro,
@@ -562,7 +565,7 @@ export class Tab2Page {
                             this.romaneio +
                             ' contado com divergências. ' +
                             'Colaborador: ' +
-                            this.usuario[0].usuario +
+                            this.usuario[0].nome +
                             '\n' +
                             ' Registro: ' +
                             this.usuario[0].registro,
@@ -1068,5 +1071,20 @@ export class Tab2Page {
         }
       } ///fim função ler qrcode
     });
+  }
+
+  public mostra(item): void {
+    alert(item);
+  }
+
+  public busca(ev: any): void {
+    this.listaTela = this.lista2;
+    const val = ev.target.value;
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() !== '') {
+      this.listaTela = this.lista2.filter(item => {
+        return item.nome.toLowerCase().indexOf(val.toLowerCase()) > -1;
+      });
+    }
   }
 } ///fim página
