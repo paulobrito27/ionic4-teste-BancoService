@@ -43,57 +43,80 @@ export class Tab2Page {
     private bdUser: BancoService,
     private banco: NativeStorage
   ) {
-       this.bdUser.banco
-         .getItem('myitem')
-         .then(data => (this.usuario = data), error => console.error(error));
+    this.bdUser.banco
+      .getItem('myitem')
+      .then(data => (this.usuario = data), error => console.error(error));
+
+    this.lista2 = [
+      {
+        prateleira: 'aaaaaaaa',
+        nome: 'chave',
+        codigo: '15002640',
+        quantidade: 5,
+        qtd_estoqueTotal: 200
+      },
+      {
+        prateleira: 'aaaaaaaa',
+        nome: 'poste',
+        codigo: '20009088',
+        quantidade: 5,
+        qtd_estoqueTotal: 200
+      },
+      {
+        prateleira: 'aaaaaaaa',
+        nome: 'fusivel',
+        codigo: '20009777',
+        quantidade: 5,
+        qtd_estoqueTotal: 200
+      }
+    ];
   }
 
-   public async opcoes2() {
-    let materialDivergente = new Array;
+  public async opcoes2() {
+    let materialDivergente = new Array();
     let divergencia: string;
-    let action = await this.actionSheet.create(
-      {
-        header: 'OPÇÕES',
-        buttons: [
-          {
-            text: 'CARREGA ARQUIVO ROMANEIO',
-            icon: 'ios-download-outline',
-            role: 'destructive',
-            handler: () => {
-              if (this.liberadoLeitura) {
-                //escolhe arquivo e fornece endereço formato uri
-                this.fileChooser.open().then(uri => {
-                  //resolveLocalFilesystemUrl
-                  //transforma do formato uri para url
-                  this.file.resolveLocalFilesystemUrl(uri).then(url => {
-
-                    //pega somente ao nome do arquivo
-                    this.file.readAsText(this.file.externalRootDirectory, 'Download/' + url.name).then(value => {
+    let action = await this.actionSheet.create({
+      header: 'OPÇÕES',
+      buttons: [
+        {
+          text: 'CARREGA ARQUIVO ROMANEIO',
+          icon: 'ios-download-outline',
+          role: 'destructive',
+          handler: () => {
+            if (this.liberadoLeitura) {
+              //escolhe arquivo e fornece endereço formato uri
+              this.fileChooser.open().then(uri => {
+                //resolveLocalFilesystemUrl
+                //transforma do formato uri para url
+                this.file.resolveLocalFilesystemUrl(uri).then(url => {
+                  //pega somente ao nome do arquivo
+                  this.file
+                    .readAsText(this.file.externalRootDirectory, 'Download/' + url.name)
+                    .then(value => {
                       this.texto = value;
 
-
                       //tratamento do texto para descobrir o Almoxarifado.
-                      let alm1 = this.texto.split("Almoxarifado");
-                      let alm2 = alm1[1].split("DIS");
+                      let alm1 = this.texto.split('Almoxarifado');
+                      let alm2 = alm1[1].split('DIS');
                       this.almoxarifado = alm2[0];
 
                       //tratamento do texto para descobrir o nome da empreiteira.
-                      let emp1 = this.texto.split("Empreiteira");
-                      let emp2 = emp1[1].split("Nro.");
+                      let emp1 = this.texto.split('Empreiteira');
+                      let emp2 = emp1[1].split('Nro.');
                       this.empreiteira = emp2[0];
 
                       //tratamento do texto para descobrir o numero do romaneio.
-                      let rom1 = this.texto.split("Nro.");
+                      let rom1 = this.texto.split('Nro.');
                       let rom2 = rom1[1];
-                      let rom3 = rom2.split(" ");
+                      let rom3 = rom2.split(' ');
                       let rom4 = rom3[2].split('D');
                       this.romaneio = rom4[0];
 
                       //começo do tratamento para pegar apenas os materiais liberados.
 
-                      let ped1: string[] = this.texto.split("Peso|");
+                      let ped1: string[] = this.texto.split('Peso|');
                       let ped2: string = ped1[1];
-                      let novo: string = ped2.replace(/\s/g, "#");
+                      let novo: string = ped2.replace(/\s/g, '#');
                       let novo2: string[] = novo.split('--##|#');
                       let novo3: string = novo2[1];
                       let ped3: string[] = novo3.split('#|##|#');
@@ -102,698 +125,651 @@ export class Tab2Page {
                       let linha: string[];
 
                       ped3.forEach(element => {
-                        let linha2 = element.replace(/#/g, " ");
+                        let linha2 = element.replace(/#/g, ' ');
                         linha = linha2.split('|');
-                        let corrigePonto = linha[5].replace(".", "");
-                        let corrige: string[] = corrigePonto.split(",");
+                        let corrigePonto = linha[5].replace('.', '');
+                        let corrige: string[] = corrigePonto.split(',');
 
                         let linhaCorrigida: string;
 
-                        if (corrige[1] == "000 ") {
+                        if (corrige[1] == '000 ') {
                           linhaCorrigida = corrige[0];
                         } else {
-                          let numero: any = (corrige[0] + "." + corrige[1])
+                          let numero: any = corrige[0] + '.' + corrige[1];
                           linhaCorrigida = numero;
                         }
 
-                        this.lista2.push({ codigo: linha[0], nome: linha[1], quantidade: linhaCorrigida, qtd_contada: 0, lidoManual: false })
+                        this.lista2.push({
+                          codigo: linha[0],
+                          nome: linha[1],
+                          quantidade: linhaCorrigida,
+                          qtd_contada: 0,
+                          lidoManual: false
+                        });
                       });
 
                       this.recontagem = false; //zera a recontagem para default.
 
                       //-----------------------------GRAVANDO LISTA NO STORAGE-----------------------------------------------------------------
-                      this.banco.setItem('LISTA2', this.lista2)
+                      this.banco
+                        .setItem('LISTA2', this.lista2)
                         .then(
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
 
-
-                      this.banco.setItem('ROMANEIO2', this.romaneio)
+                      this.banco
+                        .setItem('ROMANEIO2', this.romaneio)
                         .then(
                           () => console.log('Stored item!'),
                           error => alert('Lista não gravada na memória interna -> ' + error)
                         );
-
-
 
                       this.liberadoLeitura = false;
-                    }).catch(async err => {
-                     const toast = await this.toastCtrl.create({
-                        message: "NÃO FOI POSSIVEL LER O ARQUIVO!!!!",
+                    })
+                    .catch(async err => {
+                      const toast = await this.toastCtrl.create({
+                        message: 'NÃO FOI POSSIVEL LER O ARQUIVO!!!!',
                         duration: 2000,
                         position: 'top'
                       });
                       toast.present();
                     });
-
-                  });
-                })
-
-              }
-            }
-          },
-
-          {
-            text: 'ZERAR LISTA',
-            icon: 'trash',
-            role: 'destructive',
-            handler: async () => {
-              //-----inicio do alert---
-              let alert =  await this.alertCtrl.create(
-                {
-                  header: 'CONFIRMAÇÃO DE ZERAR LISTA',
-                  message: 'Você tem certeza de que deseja zerar a listagem? Todos os materiais e a contagem serão perdidos permanentemente.',
-                  buttons: [
-                    //---botao 1
-                    {
-                      text: "CANCELAR",
-                      role: 'calcel',
-                      handler: () => {
-
-                      }
-                    },
-                    //---botao 2
-                    {
-                      text: "CONFIRMAR",
-                      role: 'calcel',
-                      handler: () => {
-                        let tamanho: number = this.lista2.length;
-                        this.lista2.splice(0, tamanho);
-
-                        this.liberadoLeitura = true;
-
-                        let tam: number = this.materialSeries.length;
-                        this.materialSeries.splice(0, tam);
-
-                        let tama: number = this.materialgediss.length;
-                        this.materialgediss.splice(0, tama);
-
-                        this.recontagem = false; //zera a recontagem para default.
-
-                        this.romaneio ="";
-
-                        //zera os Storages--------------------------------------------------------------
-                        this.banco.clear();
-
-                      }
-                    }
-
-                  ]
-
                 });
-               await alert.present();
-
-            }
-          },
-
-          {
-            text: 'ENVIAR CONTAGEM',
-            icon: 'ios-send-outline',
-            role: 'destructive',
-            handler: async () => {
-
-              let contagemTerminada: boolean = true;
-
-
-              this.lista2.forEach(element => {
-
-                if (element.quantidade != element.qtd_contada) {
-                  contagemTerminada = false;
-                  materialDivergente.push(element);
-                }
               });
+            }
+          }
+        },
 
-              //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
-              materialDivergente.forEach(element => {
+        {
+          text: 'ZERAR LISTA',
+          icon: 'trash',
+          role: 'destructive',
+          handler: async () => {
+            //-----inicio do alert---
+            let alert = await this.alertCtrl.create({
+              header: 'CONFIRMAÇÃO DE ZERAR LISTA',
+              message:
+                'Você tem certeza de que deseja zerar a listagem? Todos os materiais e a contagem serão perdidos permanentemente.',
+              buttons: [
+                //---botao 1
+                {
+                  text: 'CANCELAR',
+                  role: 'calcel',
+                  handler: () => {}
+                },
+                //---botao 2
+                {
+                  text: 'CONFIRMAR',
+                  role: 'calcel',
+                  handler: () => {
+                    let tamanho: number = this.lista2.length;
+                    this.lista2.splice(0, tamanho);
 
-                this.mensagem.push('\n\n' + element.codigo + ' ; ');
+                    this.liberadoLeitura = true;
 
+                    let tam: number = this.materialSeries.length;
+                    this.materialSeries.splice(0, tam);
+
+                    let tama: number = this.materialgediss.length;
+                    this.materialgediss.splice(0, tama);
+
+                    this.recontagem = false; //zera a recontagem para default.
+
+                    this.romaneio = '';
+
+                    //zera os Storages--------------------------------------------------------------
+                    this.banco.clear();
+                  }
+                }
+              ]
+            });
+            await alert.present();
+          }
+        },
+
+        {
+          text: 'ENVIAR CONTAGEM',
+          icon: 'ios-send-outline',
+          role: 'destructive',
+          handler: async () => {
+            let contagemTerminada: boolean = true;
+
+            this.lista2.forEach(element => {
+              if (element.quantidade != element.qtd_contada) {
+                contagemTerminada = false;
+                materialDivergente.push(element);
+              }
+            });
+
+            //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
+            materialDivergente.forEach(element => {
+              this.mensagem.push('\n\n' + element.codigo + ' ; ');
+            });
+            //transforma um array em uma única string para ser enviado pelo email
+            divergencia = this.mensagem.join(' ');
+            //zera mensagem
+            let tam: number = this.mensagem.length;
+            this.mensagem.splice(0, tam);
+
+            if (contagemTerminada) {
+              //trabalhando com a promisse do materialSeries
+              let temMatSerie: number = this.materialSeries.length;
+              let mensagemNovaSeries: string;
+              let temMatGedis: number = this.materialgediss.length;
+              let mensagemNovaGedis: string;
+              let mensagemMateriaisTotaisSeparados: string;
+              let materiaisLidosManualmente: string;
+
+              if (temMatSerie > 0) {
+                this.materialSeries.forEach(element => {
+                  this.mensagem.push(
+                    '\n------------SERIES-----------------\nCódigo: ' + element.codigo + ' .\n'
+                  );
+                  let mensagemSerie = element.series.split(',');
+                  mensagemSerie.forEach(element2 => {
+                    this.mensagem.push(element2 + '\n');
+                  });
+                });
+                //transforma um array em uma única string para ser enviado pelo email
+                mensagemNovaSeries = this.mensagem.join(' ');
+                //zera mensagem
+                let tam: number = this.mensagem.length;
+                this.mensagem.splice(0, tam);
+              }
+
+              //trabalhando com a promisse do materialGedis
+
+              if (temMatGedis > 0) {
+                this.materialgediss.forEach(element => {
+                  this.mensagem.push(
+                    '\n------------GEDIS-----------------\nMATERIAL código: ' +
+                      element.codigo +
+                      ' .\n\n'
+                  );
+                  let mensGedis = element.gedis.split(',');
+                  mensGedis.forEach((element2: string) => {
+                    this.mensagem.push(element2 + '\n');
+                  });
+                });
+                //transforma um array em uma única string para ser enviado pelo email
+                mensagemNovaGedis = this.mensagem.join(' ');
+                //zera mensagem
+                let tam: number = this.mensagem.length;
+                this.mensagem.splice(0, tam);
+              }
+
+              //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
+              this.lista2.forEach(element => {
+                this.mensagem.push(
+                  '\n\n' +
+                    element.codigo +
+                    ' ' +
+                    element.nome +
+                    '\n contados -> ' +
+                    element.qtd_contada
+                );
               });
               //transforma um array em uma única string para ser enviado pelo email
-              divergencia = this.mensagem.join(' ');
+              mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
               //zera mensagem
               let tam: number = this.mensagem.length;
               this.mensagem.splice(0, tam);
 
-
-              if (contagemTerminada) {
-
-                //trabalhando com a promisse do materialSeries
-                let temMatSerie: number = this.materialSeries.length;
-                let mensagemNovaSeries: string;
-                let temMatGedis: number = this.materialgediss.length;
-                let mensagemNovaGedis: string;
-                let mensagemMateriaisTotaisSeparados: string;
-                let materiaisLidosManualmente: string;
-
-
-                if (temMatSerie > 0) {
-                  this.materialSeries.forEach(element => {
-                    this.mensagem.push('\n------------SERIES-----------------\nCódigo: ' + element.codigo + ' .\n');
-                    let mensagemSerie = element.series.split(',');
-                    mensagemSerie.forEach(element2 => {
-                      ;
-                      this.mensagem.push(element2 + '\n');
-                    });
-                  });
-                  //transforma um array em uma única string para ser enviado pelo email
-                  mensagemNovaSeries = this.mensagem.join(' ');
-                  //zera mensagem
-                  let tam: number = this.mensagem.length;
-                  this.mensagem.splice(0, tam);
+              //trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
+              this.lista2.forEach(element => {
+                if (element.lidoManual == true) {
+                  this.mensagem.push(
+                    '\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual'
+                  );
                 }
-
-
-                //trabalhando com a promisse do materialGedis
-
-                if (temMatGedis > 0) {
-
-                  this.materialgediss.forEach(element => {
-                    this.mensagem.push('\n------------GEDIS-----------------\nMATERIAL código: ' + element.codigo + ' .\n\n');
-                    let mensGedis = element.gedis.split(',');
-                    mensGedis.forEach((element2: string) => {
-                      this.mensagem.push(element2 + '\n');
-                    });
-                  });
-                  //transforma um array em uma única string para ser enviado pelo email
-                  mensagemNovaGedis = this.mensagem.join(' ');
-                  //zera mensagem
-                  let tam: number = this.mensagem.length;
-                  this.mensagem.splice(0, tam);
-                }
-
-                //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
-                this.lista2.forEach(element => {
-                  this.mensagem.push('\n\n' + element.codigo + ' ' + element.nome + '\n contados -> ' + element.qtd_contada);
-                });
-                //transforma um array em uma única string para ser enviado pelo email
-                mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
-                //zera mensagem
-                let tam: number = this.mensagem.length;
-                this.mensagem.splice(0, tam);
-
-
-                //trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
-                this.lista2.forEach(element => {
-                  if (element.lidoManual == true) {
-                    this.mensagem.push('\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual');
-                  }
-                });
-                //transforma um array em uma única string para ser enviado pelo email
-                materiaisLidosManualmente = this.mensagem.join(' ');
-                //zera mensagem
-                tam = this.mensagem.length;
-                this.mensagem.splice(0, tam);
-
-
-                //tratando gedis e series vazios
-                if (mensagemNovaSeries == undefined) {
-                  mensagemNovaSeries = '\nNão existem materiais que tenham n° de série'
-                }
-                if (mensagemNovaGedis == undefined) {
-                  mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis'
-                }
-                if (materiaisLidosManualmente == undefined) {
-                  materiaisLidosManualmente = "\n\nTodos os materiais foram lidos pelo QR-CODE."
-                }
-
-
-                //função de envio de email.....................................
-                let email = {
-                  to: this.usuario[0].email,
-                  cc: '',
-                  bcc: [],
-                  attachments: [],
-                  subject: 'Romaneio n° ' + this.romaneio + "  conferido com sucesso por " + "Colaborador: " + this.usuario[0].usuario + "\n" + "Registro: " + this.usuario[0].registro,
-                  body: "Todos os materiais foram conferifos na sua totalidade com sucesso!!!!\n" +
-                    "\n\n____________________________________________________________________________________________" +
-                    "\n\n\n\nRelação de materiais separados:\n"
-                    + mensagemMateriaisTotaisSeparados +
-                    "\n\n---------------------------------------------------------------" +
-                    "\n\n---------------------------------------------------------------" +
-                    +"\n\n\nLista de Gedis/Series dos materiais separados: \n\n\n\n"
-                    + mensagemNovaSeries + mensagemNovaGedis +
-                    "\n\n\n\nMateriais lidos de forma manual:\n" + materiaisLidosManualmente,
-                  isHtml: false,
-                  app: 'Gmail'
-                };
-                this.emailComposer.open(email);
-                //fim função email....................................................
-
-                this.recontagem = false; //zera a recontagem para default.
-
-
-              } else {
-
-                ///INICIO ENVIO COM ERRO-----------------------------------------------------------
-                //----------------------------- ENVIA EMAIL SEM TERMINO--------------------------------------------
-                let alert1 = await this.alertCtrl.create(
-                  {
-                    header: 'EXISTEM DIVERGÊNCIAS NO RECEBIMENTO, A PRIMEIRA RECONTAGEM É OBRIGATÓRIA!!',
-                    message: 'MATERIAIS DIVERGENTES: ' + divergencia,
-                    buttons: [
-                      //---botao 1
-                      {
-                        text: "RECONTAR",
-                        role: 'calcel',
-                        handler: () => {
-
-
-                          materialDivergente.forEach(codigoDivergente => {
-
-                            //zerando a quantidade contada
-                            this.lista2.forEach(element => {
-                              if (element.codigo == codigoDivergente.codigo) {
-                                element.qtd_contada = 0;
-                                element.lidoManual = false;
-                              }
-                            });
-
-
-                            //zerandoseries e gedis
-                            let contador: number = 0;
-                            this.materialSeries.forEach(elementS => {
-
-                              if (elementS.codigo == codigoDivergente.codigo) {
-                                this.materialSeries.splice(contador, 1);
-                              }
-                              contador = contador + 1;
-                            });
-
-                            let contador2: number = 0;
-                            this.materialgediss.forEach(elementG => {
-                              ;
-                              if (elementG.codigo == codigoDivergente.codigo) {
-                                this.materialgediss.splice(contador2, 1);
-                              }
-                              contador2 = contador2 + 1;;
-                            });
-
-                          });
-
-                          //zerando series e gedis já contados no volatil
-                          let tam: number = this.series.length;
-                          this.series.splice(0, tam);
-                          tam = this.gediss.length;
-                          this.gediss.splice(0, tam);
-
-
-
-                          // grava lista storage
-                          this.banco.setItem('LISTA', this.lista2)
-                            .then(
-                              () => console.log('Stored item!'),
-                            );
-
-                          this.recontagem = true; //libera envio email co divergencias.
-
-                        }
-                      },
-                      //---botao 2
-                      {
-                        text: "CONFIRMAR",
-                        role: 'calcel',
-                        handler: () => {
-
-
-                          if (this.recontagem) {
-
-                            //trabalhando com a promisse do materialSeries
-                            let temMatSerie: number = this.materialSeries.length;
-                            let mensagemNovaSeries: string;
-                            let temMatGedis: number = this.materialgediss.length;
-                            let mensagemNovaGedis: string;
-                            let mensagemMateriaisTotaisSeparados: string;
-                            let mensagemMateriaisComDivergencia: string;
-                            let materiaisLidosManualmente: string;
-
-
-                            if (temMatSerie > 0) {
-                              this.materialSeries.forEach(element => {
-                                this.mensagem.push('\n------------SERIES-----------------\n' + 'Código: ' + element.codigo + ' .\n');
-                                let mensagemSerie = element.series.split(',');
-                                mensagemSerie.forEach(element2 => {
-                                  ;
-                                  this.mensagem.push(element2 + '\n');
-                                });
-                              });
-                              //transforma um array em uma única string para ser enviado pelo email
-                              mensagemNovaSeries = this.mensagem.join(' ');
-                              //zera mensagem
-                              let tam: number = this.mensagem.length;
-                              this.mensagem.splice(0, tam);
-                            }
-
-
-                            //trabalhando com a promisse do materialGedis
-
-                            if (temMatGedis > 0) {
-
-                              this.materialgediss.forEach(element => {
-                                this.mensagem.push('\n------------GEDIS-----------------\nMATERIAL código: ' + element.codigo + ' .\n\n');
-                                let mensGedis = element.gedis.split(',');
-                                mensGedis.forEach((element2: string) => {
-                                  this.mensagem.push(element2 + '\n');
-                                });
-                              });
-                              //transforma um array em uma única string para ser enviado pelo email
-                              mensagemNovaGedis = this.mensagem.join(' ');
-                              //zera mensagem
-                              let tam: number = this.mensagem.length;
-                              this.mensagem.splice(0, tam);
-                            }
-
-                            //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
-                            this.lista2.forEach(element => {
-                              this.mensagem.push('\n\n' + element.codigo + ' ' + element.nome + '\n contados -> ' + element.qtd_contada);
-                            });
-                            //transforma um array em uma única string para ser enviado pelo email
-                            mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
-                            //zera mensagem
-                            let tam: number = this.mensagem.length;
-                            this.mensagem.splice(0, tam);
-
-
-                            //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
-                            materialDivergente.forEach(element => {
-
-                              this.mensagem.push('\n\n' + element.codigo + ' ' + element.nome + '\n contados -> ' + element.qtd_contada + '\n qtd documento -> ' + element.quantidade);
-
-                            });
-                            //transforma um array em uma única string para ser enviado pelo email
-                            mensagemMateriaisComDivergencia = this.mensagem.join(' ');
-                            //zera mensagem
-                            tam = this.mensagem.length;
-                            this.mensagem.splice(0, tam);
-
-
-                            //trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
-                            this.lista2.forEach(element => {
-                              if (element.lidoManual == true) {
-                                this.mensagem.push('\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual');
-                              }
-                            });
-                            //transforma um array em uma única string para ser enviado pelo email
-                            materiaisLidosManualmente = this.mensagem.join(' ');
-                            //zera mensagem
-                            tam = this.mensagem.length;
-                            this.mensagem.splice(0, tam);
-
-
-                            //tratando gedis e series vazios
-                            if (mensagemNovaSeries == undefined) {
-                              mensagemNovaSeries = '\nNão existem materiais que tenham n° de série'
-                            }
-                            if (mensagemNovaGedis == undefined) {
-                              mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis'
-                            }
-                            if (materiaisLidosManualmente == undefined) {
-                              materiaisLidosManualmente = "\n\nTodos os materiais foram lidos pelo QR-CODE."
-                            }
-
-
-
-                            //função de envio de email.....................................
-                            let email = {
-                              to: this.usuario[0].email,
-                              cc: '',
-                              bcc: [],
-                              attachments: [],
-                              subject: 'Romaneio n°' + this.romaneio + " contado com divergências. " + "Colaborador: " + this.usuario[0].usuario + "\n" + " Registro: " + this.usuario[0].registro,
-                              body: "Lista de materiais separados:\n" + mensagemMateriaisTotaisSeparados +
-                                "\n\n\n____________________________________________________________________________________________" +
-                                "\n\nMATERIAIS COM DIVERGÊNCIA NA CONFERÊNCIA: \n\n" +
-                                mensagemMateriaisComDivergencia +
-                                "\n\n____________________________________________________________________________________________" +
-                                "\n\n\nLista de Gedis/Series dos materiais separados: \n" +
-                                mensagemNovaSeries + mensagemNovaGedis +
-                                "\n\n\n\nMateriais lidos de forma manual:\n" + materiaisLidosManualmente,
-                              isHtml: false,
-                              app: 'Gmail'
-                            };
-                            this.emailComposer.open(email);
-                            //fim função email....................................................
-
-                            this.recontagem = false; //zera a recontagem para default.
-
-                          } else {
-                            this.recontagem = false; //zera a recontagem para default.
-                            alert("A Primeira recontagem é obrigatória");
-                          }
-
-
-
-
-
-
-                          //-------------------------------------------------------------------------------------------
-
-                        }
-                      }
-
-                    ]
-
-                  });
-                await alert1.present();
-                //---------------------------FIM ENVIA EMAIL SEM TERMINO-----------------------------------------
-
-
-
-
-
-                ///-----------------------------------------------------------------------------------
+              });
+              //transforma um array em uma única string para ser enviado pelo email
+              materiaisLidosManualmente = this.mensagem.join(' ');
+              //zera mensagem
+              tam = this.mensagem.length;
+              this.mensagem.splice(0, tam);
+
+              //tratando gedis e series vazios
+              if (mensagemNovaSeries == undefined) {
+                mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
+              }
+              if (mensagemNovaGedis == undefined) {
+                mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
+              }
+              if (materiaisLidosManualmente == undefined) {
+                materiaisLidosManualmente = '\n\nTodos os materiais foram lidos pelo QR-CODE.';
               }
 
+              //função de envio de email.....................................
+              let email = {
+                to: this.usuario[0].email,
+                cc: '',
+                bcc: [],
+                attachments: [],
+                subject:
+                  'Romaneio n° ' +
+                  this.romaneio +
+                  '  conferido com sucesso por ' +
+                  'Colaborador: ' +
+                  this.usuario[0].usuario +
+                  '\n' +
+                  'Registro: ' +
+                  this.usuario[0].registro,
+                body:
+                  'Todos os materiais foram conferifos na sua totalidade com sucesso!!!!\n' +
+                  '\n\n____________________________________________________________________________________________' +
+                  '\n\n\n\nRelação de materiais separados:\n' +
+                  mensagemMateriaisTotaisSeparados +
+                  '\n\n---------------------------------------------------------------' +
+                  '\n\n---------------------------------------------------------------' +
+                  +'\n\n\nLista de Gedis/Series dos materiais separados: \n\n\n\n' +
+                  mensagemNovaSeries +
+                  mensagemNovaGedis +
+                  '\n\n\n\nMateriais lidos de forma manual:\n' +
+                  materiaisLidosManualmente,
+                isHtml: false,
+                app: 'Gmail'
+              };
+              this.emailComposer.open(email);
+              //fim função email....................................................
 
+              this.recontagem = false; //zera a recontagem para default.
+            } else {
+              ///INICIO ENVIO COM ERRO-----------------------------------------------------------
+              //----------------------------- ENVIA EMAIL SEM TERMINO--------------------------------------------
+              let alert1 = await this.alertCtrl.create({
+                header:
+                  'EXISTEM DIVERGÊNCIAS NO RECEBIMENTO, A PRIMEIRA RECONTAGEM É OBRIGATÓRIA!!',
+                message: 'MATERIAIS DIVERGENTES: ' + divergencia,
+                buttons: [
+                  //---botao 1
+                  {
+                    text: 'RECONTAR',
+                    role: 'calcel',
+                    handler: () => {
+                      materialDivergente.forEach(codigoDivergente => {
+                        //zerando a quantidade contada
+                        this.lista2.forEach(element => {
+                          if (element.codigo == codigoDivergente.codigo) {
+                            element.qtd_contada = 0;
+                            element.lidoManual = false;
+                          }
+                        });
+
+                        //zerandoseries e gedis
+                        let contador: number = 0;
+                        this.materialSeries.forEach(elementS => {
+                          if (elementS.codigo == codigoDivergente.codigo) {
+                            this.materialSeries.splice(contador, 1);
+                          }
+                          contador = contador + 1;
+                        });
+
+                        let contador2: number = 0;
+                        this.materialgediss.forEach(elementG => {
+                          if (elementG.codigo == codigoDivergente.codigo) {
+                            this.materialgediss.splice(contador2, 1);
+                          }
+                          contador2 = contador2 + 1;
+                        });
+                      });
+
+                      //zerando series e gedis já contados no volatil
+                      let tam: number = this.series.length;
+                      this.series.splice(0, tam);
+                      tam = this.gediss.length;
+                      this.gediss.splice(0, tam);
+
+                      // grava lista storage
+                      this.banco
+                        .setItem('LISTA', this.lista2)
+                        .then(() => console.log('Stored item!'));
+
+                      this.recontagem = true; //libera envio email co divergencias.
+                    }
+                  },
+                  //---botao 2
+                  {
+                    text: 'CONFIRMAR',
+                    role: 'calcel',
+                    handler: () => {
+                      if (this.recontagem) {
+                        //trabalhando com a promisse do materialSeries
+                        let temMatSerie: number = this.materialSeries.length;
+                        let mensagemNovaSeries: string;
+                        let temMatGedis: number = this.materialgediss.length;
+                        let mensagemNovaGedis: string;
+                        let mensagemMateriaisTotaisSeparados: string;
+                        let mensagemMateriaisComDivergencia: string;
+                        let materiaisLidosManualmente: string;
+
+                        if (temMatSerie > 0) {
+                          this.materialSeries.forEach(element => {
+                            this.mensagem.push(
+                              '\n------------SERIES-----------------\n' +
+                                'Código: ' +
+                                element.codigo +
+                                ' .\n'
+                            );
+                            let mensagemSerie = element.series.split(',');
+                            mensagemSerie.forEach(element2 => {
+                              this.mensagem.push(element2 + '\n');
+                            });
+                          });
+                          //transforma um array em uma única string para ser enviado pelo email
+                          mensagemNovaSeries = this.mensagem.join(' ');
+                          //zera mensagem
+                          let tam: number = this.mensagem.length;
+                          this.mensagem.splice(0, tam);
+                        }
+
+                        //trabalhando com a promisse do materialGedis
+
+                        if (temMatGedis > 0) {
+                          this.materialgediss.forEach(element => {
+                            this.mensagem.push(
+                              '\n------------GEDIS-----------------\nMATERIAL código: ' +
+                                element.codigo +
+                                ' .\n\n'
+                            );
+                            let mensGedis = element.gedis.split(',');
+                            mensGedis.forEach((element2: string) => {
+                              this.mensagem.push(element2 + '\n');
+                            });
+                          });
+                          //transforma um array em uma única string para ser enviado pelo email
+                          mensagemNovaGedis = this.mensagem.join(' ');
+                          //zera mensagem
+                          let tam: number = this.mensagem.length;
+                          this.mensagem.splice(0, tam);
+                        }
+
+                        //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
+                        this.lista2.forEach(element => {
+                          this.mensagem.push(
+                            '\n\n' +
+                              element.codigo +
+                              ' ' +
+                              element.nome +
+                              '\n contados -> ' +
+                              element.qtd_contada
+                          );
+                        });
+                        //transforma um array em uma única string para ser enviado pelo email
+                        mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
+                        //zera mensagem
+                        let tam: number = this.mensagem.length;
+                        this.mensagem.splice(0, tam);
+
+                        //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
+                        materialDivergente.forEach(element => {
+                          this.mensagem.push(
+                            '\n\n' +
+                              element.codigo +
+                              ' ' +
+                              element.nome +
+                              '\n contados -> ' +
+                              element.qtd_contada +
+                              '\n qtd documento -> ' +
+                              element.quantidade
+                          );
+                        });
+                        //transforma um array em uma única string para ser enviado pelo email
+                        mensagemMateriaisComDivergencia = this.mensagem.join(' ');
+                        //zera mensagem
+                        tam = this.mensagem.length;
+                        this.mensagem.splice(0, tam);
+
+                        //trabalhando com a lista para enviar mensagem de todos materiais que foram lidos manualmente
+                        this.lista2.forEach(element => {
+                          if (element.lidoManual == true) {
+                            this.mensagem.push(
+                              '\n\n' +
+                                element.codigo +
+                                '  ' +
+                                element.nome +
+                                ' foi lido de maneira manual'
+                            );
+                          }
+                        });
+                        //transforma um array em uma única string para ser enviado pelo email
+                        materiaisLidosManualmente = this.mensagem.join(' ');
+                        //zera mensagem
+                        tam = this.mensagem.length;
+                        this.mensagem.splice(0, tam);
+
+                        //tratando gedis e series vazios
+                        if (mensagemNovaSeries == undefined) {
+                          mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
+                        }
+                        if (mensagemNovaGedis == undefined) {
+                          mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
+                        }
+                        if (materiaisLidosManualmente == undefined) {
+                          materiaisLidosManualmente =
+                            '\n\nTodos os materiais foram lidos pelo QR-CODE.';
+                        }
+
+                        //função de envio de email.....................................
+                        let email = {
+                          to: this.usuario[0].email,
+                          cc: '',
+                          bcc: [],
+                          attachments: [],
+                          subject:
+                            'Romaneio n°' +
+                            this.romaneio +
+                            ' contado com divergências. ' +
+                            'Colaborador: ' +
+                            this.usuario[0].usuario +
+                            '\n' +
+                            ' Registro: ' +
+                            this.usuario[0].registro,
+                          body:
+                            'Lista de materiais separados:\n' +
+                            mensagemMateriaisTotaisSeparados +
+                            '\n\n\n____________________________________________________________________________________________' +
+                            '\n\nMATERIAIS COM DIVERGÊNCIA NA CONFERÊNCIA: \n\n' +
+                            mensagemMateriaisComDivergencia +
+                            '\n\n____________________________________________________________________________________________' +
+                            '\n\n\nLista de Gedis/Series dos materiais separados: \n' +
+                            mensagemNovaSeries +
+                            mensagemNovaGedis +
+                            '\n\n\n\nMateriais lidos de forma manual:\n' +
+                            materiaisLidosManualmente,
+                          isHtml: false,
+                          app: 'Gmail'
+                        };
+                        this.emailComposer.open(email);
+                        //fim função email....................................................
+
+                        this.recontagem = false; //zera a recontagem para default.
+                      } else {
+                        this.recontagem = false; //zera a recontagem para default.
+                        alert('A Primeira recontagem é obrigatória');
+                      }
+
+                      //-------------------------------------------------------------------------------------------
+                    }
+                  }
+                ]
+              });
+              await alert1.present();
+              //---------------------------FIM ENVIA EMAIL SEM TERMINO-----------------------------------------
+
+              ///-----------------------------------------------------------------------------------
             }
+          }
+        },
 
-          },
+        {
+          text: 'RECARREGA',
+          icon: 'ios-refresh-outline',
+          role: 'destructive',
+          handler: () => {
+            //-----------------------------------RECARREGA ÚLTIMA ATUALIZAÇÃO DA LISTA NO STORAGE---------------------------------------------------------
+            this.banco
+              .getItem('LISTA')
+              .then(data => (this.lista2 = data), error => console.error(error));
 
-          {
-            text: 'RECARREGA',
-            icon: 'ios-refresh-outline',
-            role: 'destructive',
-            handler: () => {
+            this.banco
+              .getItem('SERIE')
+              .then(data => (this.materialSeries = data), error => console.error(error));
 
-              //-----------------------------------RECARREGA ÚLTIMA ATUALIZAÇÃO DA LISTA NO STORAGE---------------------------------------------------------
-              this.banco.getItem('LISTA')
-                .then(
-                  data => this.lista2 = data,
-                  error => console.error(error)
-                );
+            this.banco
+              .getItem('GEDIS')
+              .then(data => (this.materialgediss = data), error => console.error(error));
 
-              this.banco.getItem('SERIE')
-                .then(
-                  data => this.materialSeries = data,
-                  error => console.error(error)
-                );
+            this.banco
+              .getItem('ROMANEIO')
+              .then(data => (this.romaneio = data), error => console.error(error));
 
-              this.banco.getItem('GEDIS')
-                .then(
-                  data => this.materialgediss = data,
-                  error => console.error(error)
-                );
+            this.banco
+              .getItem('ALMOXARIFADO')
+              .then(data => (this.almoxarifado = data), error => console.error(error));
 
-              this.banco.getItem('ROMANEIO')
-                .then(
-                  data => this.romaneio = data,
-                  error => console.error(error)
-                );
+            this.banco
+              .getItem('EMPREITEIRA')
+              .then(data => (this.empreiteira = data), error => console.error(error));
 
-              this.banco.getItem('ALMOXARIFADO')
-                .then(
-                  data => this.almoxarifado = data,
-                  error => console.error(error)
-                );
+            //-----------------------------------------------FIM RECARREGA STORAGE-------------------------------------------------------
+          }
+        },
 
-              this.banco.getItem('EMPREITEIRA')
-                .then(
-                  data => this.empreiteira = data,
-                  error => console.error(error)
-                );
-
-
-              //-----------------------------------------------FIM RECARREGA STORAGE-------------------------------------------------------
-            }
-          },
-
-
-          {
-            text: 'CANCELAR',
-            role: 'cancel',
-          },
-
-        ]
-
-      }
-
-    );
+        {
+          text: 'CANCELAR',
+          role: 'cancel'
+        }
+      ]
+    });
 
     await action.present();
   }
 
-
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
-
 
   public async apaga(item) {
     let itemClicado = item;
     let codigoClicado = itemClicado.codigo;
 
-    let alert = await this.alertCtrl.create(
-      {
-        header: codigoClicado,
-        message: "Deseja zerar contagem deste item?",
-        buttons: [
-          //---botao 1
-          {
-            text: "CANCELA",
-            role: 'calcel',
-            handler: () => {
+    let alert = await this.alertCtrl.create({
+      header: codigoClicado,
+      message: 'Deseja zerar contagem deste item?',
+      buttons: [
+        //---botao 1
+        {
+          text: 'CANCELA',
+          role: 'calcel',
+          handler: () => {}
+        },
+        //---botao 2
+        {
+          text: 'CONFIRMAR ',
+          role: 'calcel',
+          handler: () => {
+            //zerando a quantidade contada
+            this.lista2.forEach(element => {
+              if (element.codigo == codigoClicado) {
+                element.qtd_contada = 0;
+                element.lidoManual = false;
+              }
+            });
 
-            }
-          },
-          //---botao 2
-          {
-            text: "CONFIRMAR ",
-            role: 'calcel',
-            handler: () => {
+            //zerandoseries e gedis
+            //zerandoseries e gedis
+            let contador: number = 0;
+            this.materialSeries.forEach(elementS => {
+              if (elementS.codigo == codigoClicado) {
+                this.materialSeries.splice(contador, 1);
+              }
+              contador = contador + 1;
+            });
 
+            let contador2: number = 0;
+            this.materialgediss.forEach(elementG => {
+              if (elementG.codigo == codigoClicado) {
+                this.materialgediss.splice(contador2, 1);
+              }
+              contador2 = contador2 + 1;
+            });
 
-              //zerando a quantidade contada
-              this.lista2.forEach(element => {
-                if (element.codigo == codigoClicado) {
-                  element.qtd_contada = 0;
-                  element.lidoManual = false;
-                }
-              });
+            //zerando series e gedis já contados no volatil
+            let tam: number = this.series.length;
+            this.series.splice(0, tam);
+            tam = this.gediss.length;
+            this.gediss.splice(0, tam);
 
-              //zerandoseries e gedis
-              //zerandoseries e gedis
-              let contador: number = 0;
-              this.materialSeries.forEach(elementS => {
-
-                if (elementS.codigo == codigoClicado) {
-                  this.materialSeries.splice(contador, 1);
-                }
-                contador = contador + 1;
-              });
-
-              let contador2: number = 0;
-              this.materialgediss.forEach(elementG => {
-
-                if (elementG.codigo == codigoClicado) {
-                  this.materialgediss.splice(contador2, 1);
-                }
-                contador2 = contador2 + 1;
-              });
-
-
-
-              //zerando series e gedis já contados no volatil
-              let tam: number = this.series.length;
-              this.series.splice(0, tam);
-              tam = this.gediss.length;
-              this.gediss.splice(0, tam);
-
-
-
-              // grava lista storage
-              this.banco.setItem('LISTA', this.lista2)
-                .then(
-                  () => console.log('Stored item!'),
-                );
-            }
+            // grava lista storage
+            this.banco.setItem('LISTA', this.lista2).then(() => console.log('Stored item!'));
           }
-        ]
-      });
+        }
+      ]
+    });
     await alert.present();
-
   }
 
-
-
-
-
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
   ///-------------------------------------------------------------------------------------------------
-
-
-
 
   public async manual(item) {
     let itemClicado = item;
     let codigoClicado = itemClicado.codigo;
-    let alert = await this.alertCtrl.create(
-      {
-        header: codigoClicado,
-        message: "Leitura manual",
-        inputs: [
-          {
-            name: 'quantiadde',
-            placeholder: 'quantidade',
-            type: "number",
+    let alert = await this.alertCtrl.create({
+      header: codigoClicado,
+      message: 'Leitura manual',
+      inputs: [
+        {
+          name: 'quantiadde',
+          placeholder: 'quantidade',
+          type: 'number'
+        }
+      ],
+      buttons: [
+        //---botao 1
+        {
+          text: 'CANCELA',
+          role: 'calcel',
+          handler: () => {}
+        },
+        //---botao 2
+        {
+          text: 'CONFIRMAR ',
+          role: 'calcel',
+          handler: data => {
+            let qtdDigitado: any = parseFloat(data.quantiadde);
+
+            this.lista2.forEach(element => {
+              if (element.codigo.replace(/\s/g, '') == codigoClicado) {
+                let valorNovo: number = element.qtd_contada + qtdDigitado;
+                element.qtd_contada = valorNovo;
+              }
+            });
+
+            //-----gravando alteração no storage----------------------------------------------------------
+            this.banco.setItem('LISTA', this.lista2).then(() => console.log('Stored item!'));
           }
-        ],
-        buttons: [
-          //---botao 1
-          {
-            text: "CANCELA",
-            role: 'calcel',
-            handler: () => {
-
-            }
-          },
-          //---botao 2
-          {
-            text: "CONFIRMAR ",
-            role: 'calcel',
-            handler: data => {
-
-              let qtdDigitado: any = parseFloat(data.quantiadde);
-
-              this.lista2.forEach(element => {
-                if (element.codigo.replace(/\s/g, "") == codigoClicado) {
-
-                  let valorNovo: number = element.qtd_contada + qtdDigitado;
-                  element.qtd_contada = valorNovo;
-                }
-
-              });
-
-              //-----gravando alteração no storage----------------------------------------------------------
-              this.banco.setItem('LISTA', this.lista2)
-                .then(
-                  () => console.log('Stored item!'),
-
-                );
-
-            }
-          }
-        ]
-      });
+        }
+      ]
+    });
     await alert.present();
   }
 
   // -------------------------------------------------FUNÇÃO PARA LER OS QR-CODES--------------------------------
 
   public lerQr2(item) {
-
     let itemClicado = item;
     let codigoClicado = itemClicado.codigo;
-
 
     let codigoQrcode: string;
     let qtdQrcode: number;
     let gedisQrcode: string;
     let serieQrcode: string;
-
 
     let temCodigo: boolean = false;
     let temSerie: boolean = false;
@@ -806,7 +782,6 @@ export class Tab2Page {
     this.barcodeScanner.scan().then(barcodeData => {
       let lido: string = barcodeData.text;
 
-
       //pega apenas codigo
       let verificaCodigo: number = lido.indexOf('codigo:');
       if (verificaCodigo != -1) {
@@ -814,7 +789,7 @@ export class Tab2Page {
         let cod2: string = cod1[1];
         let cod3: string[] = cod2.split('",');
         let cod4: string = cod3[0];
-        let cod: string = cod4.replace(/\s/g, "");
+        let cod: string = cod4.replace(/\s/g, '');
         codigoQrcode = cod; //Variavel que vai carregar o código lido no QrCode
         temCodigo = true;
       } else {
@@ -829,7 +804,7 @@ export class Tab2Page {
         let qtd2: string = qtd1[1];
         let qtd3: string[] = qtd2.split('"');
         let qtd4: string = qtd3[0];
-        let qtdQr: string = qtd4.replace(/\s/g, "");
+        let qtdQr: string = qtd4.replace(/\s/g, '');
         qtdQrcode = parseFloat(qtdQr); //Variavel que vai carregar a quantidade lida no QrCode
         temQuantidade = true;
       } else {
@@ -843,13 +818,12 @@ export class Tab2Page {
         let ser2: string = ser1[1];
         let ser3: string[] = ser2.split('"');
         let ser4: string = ser3[0];
-        let serieQr: string = ser4.replace(/\s/g, "");
+        let serieQr: string = ser4.replace(/\s/g, '');
         serieQrcode = serieQr; //Variavel que vai carregar o numero de serie lido no QrCode
         temSerie = true;
       } else {
         temSerie = false;
       }
-
 
       // pega apenas o n° do gedis
       let verificaGedis: number = lido.indexOf('gedis:');
@@ -858,31 +832,23 @@ export class Tab2Page {
         let ged2: string = ged1[1];
         let ged3: string[] = ged2.split('"');
         let ged4: string = ged3[0];
-        let gedisQr: string = ged4.replace(/\s/g, "");
+        let gedisQr: string = ged4.replace(/\s/g, '');
         gedisQrcode = gedisQr; //Variavel que vai carregar o numero do Gedis lido no QrCode
         temGedis = true;
       } else {
         temGedis = false;
       }
 
-
       ///---------------------------------------------------------------------------------------------------
       //verifica se o material lido é o que foi clicado na lista de materiais e se a quantidade ja foi pega
 
-
-
       if (temCodigo) {
-
         if (temQuantidade) {
-
           if (temSerie) {
-
             if (temGedis) {
-
               ///inicio do tem gedis--------------------------------------------------------------------------------------------------
 
-              if (codigoClicado.replace(/\s/g, "") == codigoQrcode) {
-
+              if (codigoClicado.replace(/\s/g, '') == codigoQrcode) {
                 let gedisNovo: boolean = true;
 
                 this.gediss.forEach(element => {
@@ -894,72 +860,61 @@ export class Tab2Page {
 
                 if (gedisNovo) {
                   this.lista2.forEach(async element => {
-
-                    if (element.codigo.replace(/\s/g, "") == codigoQrcode) {
-
+                    if (element.codigo.replace(/\s/g, '') == codigoQrcode) {
                       let valorNovo: number = element.qtd_contada + qtdQrcode;
                       element.qtd_contada = valorNovo;
 
                       this.gediss.push(gedisQrcode);
 
                       repete = false;
-                      let alert = await this.alertCtrl.create(
-                        {
-                          header: element.nome,
-                          message: 'Foram contados ' + valorNovo + ' unidades',
-                          buttons: [
-                            //---botao 1
-                            {
-                              text: "GRAVAR E FINALIZAR",
-                              role: 'calcel',
-                              handler: () => {
-                                ///grava todas os Gedis do mesmo material em materialGedis e  zera gediss
-                                let codigo: string = element.codigo;
-                                let gedisSTRING: string = this.gediss.join(',');
-                                this.materialgediss.push({ 'codigo': codigo, 'gedis': gedisSTRING });
-                                let tamanho: number = this.gediss.length;
-                                this.gediss.splice(0, tamanho);
+                      let alert = await this.alertCtrl.create({
+                        header: element.nome,
+                        message: 'Foram contados ' + valorNovo + ' unidades',
+                        buttons: [
+                          //---botao 1
+                          {
+                            text: 'GRAVAR E FINALIZAR',
+                            role: 'calcel',
+                            handler: () => {
+                              ///grava todas os Gedis do mesmo material em materialGedis e  zera gediss
+                              let codigo: string = element.codigo;
+                              let gedisSTRING: string = this.gediss.join(',');
+                              this.materialgediss.push({ codigo: codigo, gedis: gedisSTRING });
+                              let tamanho: number = this.gediss.length;
+                              this.gediss.splice(0, tamanho);
 
-                                //impede que leia outro material com mesmo código
-                                repete = false;
+                              //impede que leia outro material com mesmo código
+                              repete = false;
 
-                                //-----gravando alteração no storage----------------------------------------------------------
+                              //-----gravando alteração no storage----------------------------------------------------------
 
-                                this.banco.setItem('LISTA', this.lista2)
-                                  .then(
-                                    () => console.log('Stored item!'),
-
-                                  );
-                                //---------------------------------------------------------------------------------------------
-                                //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
-                                this.banco.setItem('GEDIS', this.materialgediss)
-                                  .then(
-                                    () => console.log('Stored item!'),
-
-                                  );
-                                //fim teste storage----------------------------------------------------------------
-                              }
-                            },
-                            //---botao 2
-                            {
-                              text: "CONTINUAR CONTAGEM",
-                              role: 'calcel',
-                              handler: () => {
-                                repete = true;
-                                if (repete) {
-                                  this.lerQr2(item);
-                                }
+                              this.banco
+                                .setItem('LISTA', this.lista2)
+                                .then(() => console.log('Stored item!'));
+                              //---------------------------------------------------------------------------------------------
+                              //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
+                              this.banco
+                                .setItem('GEDIS', this.materialgediss)
+                                .then(() => console.log('Stored item!'));
+                              //fim teste storage----------------------------------------------------------------
+                            }
+                          },
+                          //---botao 2
+                          {
+                            text: 'CONTINUAR CONTAGEM',
+                            role: 'calcel',
+                            handler: () => {
+                              repete = true;
+                              if (repete) {
+                                this.lerQr2(item);
                               }
                             }
-
-                          ]
-
-                        });
+                          }
+                        ]
+                      });
                       await alert.present();
-
                     }
                   });
-
                 } else {
                   alert('NUMERO DO GEDIS JÁ FOI LIDO, MATERIAL NÃO CONTABILIZADO');
                   repete = false;
@@ -968,22 +923,16 @@ export class Tab2Page {
                 if (repete) {
                   this.lerQr2(item);
                 }
-
               } else {
                 alert('CODIGO LIDO NÃO CONFERE');
                 repete = false;
               }
 
-
               ///fim do com gedis-------------------------------------------------------------------------------------------------
-
             } else {
-
-
               ///inicio do tem serie--------------------------------------------------------------------------------------------------
 
-              if (codigoClicado.replace(/\s/g, "") == codigoQrcode) {
-
+              if (codigoClicado.replace(/\s/g, '') == codigoQrcode) {
                 let serieNovo: boolean = true;
 
                 this.series.forEach(element => {
@@ -995,72 +944,61 @@ export class Tab2Page {
 
                 if (serieNovo) {
                   this.lista2.forEach(async element => {
-
-                    if (element.codigo.replace(/\s/g, "") == codigoQrcode) {
-
+                    if (element.codigo.replace(/\s/g, '') == codigoQrcode) {
                       let valorNovo: number = element.qtd_contada + qtdQrcode;
                       element.qtd_contada = valorNovo;
 
                       this.series.push(serieQrcode);
 
                       repete = false;
-                      let alert = await this.alertCtrl.create(
-                        {
-                          header: element.nome,
-                          message: 'Foram contados ' + valorNovo + ' unidades',
-                          buttons: [
-                            //---botao 1
-                            {
-                              text: "GRAVAR E FINALIZAR",
-                              role: 'calcel',
-                              handler: () => {
-                                ///grava todas os Gedis do mesmo material em materialGedis e  zera gediss
-                                let codigo: string = element.codigo;
-                                let serieSTRING: string = this.series.join(',');
-                                this.materialSeries.push({ 'codigo': codigo, 'series': serieSTRING });
-                                let tamanho: number = this.series.length;
-                                this.series.splice(0, tamanho);
+                      let alert = await this.alertCtrl.create({
+                        header: element.nome,
+                        message: 'Foram contados ' + valorNovo + ' unidades',
+                        buttons: [
+                          //---botao 1
+                          {
+                            text: 'GRAVAR E FINALIZAR',
+                            role: 'calcel',
+                            handler: () => {
+                              ///grava todas os Gedis do mesmo material em materialGedis e  zera gediss
+                              let codigo: string = element.codigo;
+                              let serieSTRING: string = this.series.join(',');
+                              this.materialSeries.push({ codigo: codigo, series: serieSTRING });
+                              let tamanho: number = this.series.length;
+                              this.series.splice(0, tamanho);
 
-                                //impede que leia outro material com mesmo código
-                                repete = false;
+                              //impede que leia outro material com mesmo código
+                              repete = false;
 
+                              //-----gravando alteração no storage----------------------------------------------------------
 
-                                //-----gravando alteração no storage----------------------------------------------------------
+                              this.banco
+                                .setItem('LISTA', this.lista2)
+                                .then(() => console.log('Stored item!'));
 
-                                this.banco.setItem('LISTA', this.lista2)
-                                  .then(
-                                    () => console.log('Stored item!'),
-
-                                  );
-
-                                //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
-                                this.banco.setItem('SERIE', this.materialSeries)
-                                  .then(
-                                    () => console.log('Stored item!'),
-                                  );
-                                //fim teste storage----------------------------------------------------------------
-                              }
-                            },
-                            //---botao 2
-                            {
-                              text: "CONTINUAR CONTAGEM",
-                              role: 'calcel',
-                              handler: () => {
-                                repete = true;
-                                if (repete) {
-                                  this.lerQr2(item);
-                                }
+                              //-----------------------------GRAVANDO MaterialGedis NO STORAGE--------------------------------
+                              this.banco
+                                .setItem('SERIE', this.materialSeries)
+                                .then(() => console.log('Stored item!'));
+                              //fim teste storage----------------------------------------------------------------
+                            }
+                          },
+                          //---botao 2
+                          {
+                            text: 'CONTINUAR CONTAGEM',
+                            role: 'calcel',
+                            handler: () => {
+                              repete = true;
+                              if (repete) {
+                                this.lerQr2(item);
                               }
                             }
-
-                          ]
-
-                        });
+                          }
+                        ]
+                      });
                       await alert.present();
-
                     }
                   });
-
                 } else {
                   alert('NUMERO DE SÉRIE JÁ FOI LIDO, MATERIAL NÃO CONTABILIZADO');
                   repete = false;
@@ -1069,67 +1007,55 @@ export class Tab2Page {
                 if (repete) {
                   this.lerQr2(item);
                 }
-
               } else {
                 alert('CODIGO LIDO NÃO CONFERE');
                 repete = false;
               }
 
-
               ///fim do com serie-----------------------------------------------------------------
             }
-
           } else {
             ///tem apenas quantidade----------------------------------------------------------------
 
-            if (codigoClicado.replace(/\s/g, "") == codigoQrcode) {
-
-
+            if (codigoClicado.replace(/\s/g, '') == codigoQrcode) {
               this.lista2.forEach(async element => {
-
-                if (element.codigo.replace(/\s/g, "") == codigoQrcode) {
-
+                if (element.codigo.replace(/\s/g, '') == codigoQrcode) {
                   let valorNovo: number = element.qtd_contada + qtdQrcode;
                   element.qtd_contada = valorNovo;
 
                   repete = false;
-                  let alert = await this.alertCtrl.create(
-                    {
-                      header: element.nome,
-                      message: 'Foram contados ' + valorNovo + ' unidades',
-                      buttons: [
-                        //---botao 1
-                        {
-                          text: "GRAVAR E FINALIZAR",
-                          role: 'calcel',
-                          handler: () => {
-                            repete = false;
-                            //-----gravando alteração no storage----------------------------------------------------------
+                  let alert = await this.alertCtrl.create({
+                    header: element.nome,
+                    message: 'Foram contados ' + valorNovo + ' unidades',
+                    buttons: [
+                      //---botao 1
+                      {
+                        text: 'GRAVAR E FINALIZAR',
+                        role: 'calcel',
+                        handler: () => {
+                          repete = false;
+                          //-----gravando alteração no storage----------------------------------------------------------
 
-                            this.banco.setItem('LISTA', this.lista2)
-                              .then(
-                                () => console.log('Stored item!'),
-
-                              );
-                            //---------------------------------------------------------------------------------------------
-                            //fim teste storage----------------------------------------------------------------
-                          }
-                        },
-                        //---botao 2
-                        {
-                          text: "CONTINUAR CONTAGEM",
-                          role: 'calcel',
-                          handler: () => {
-                            repete = true;
-                            if (repete) {
-                              this.lerQr2(item);
-                            }
+                          this.banco
+                            .setItem('LISTA', this.lista2)
+                            .then(() => console.log('Stored item!'));
+                          //---------------------------------------------------------------------------------------------
+                          //fim teste storage----------------------------------------------------------------
+                        }
+                      },
+                      //---botao 2
+                      {
+                        text: 'CONTINUAR CONTAGEM',
+                        role: 'calcel',
+                        handler: () => {
+                          repete = true;
+                          if (repete) {
+                            this.lerQr2(item);
                           }
                         }
-
-                      ]
-
-                    });
+                      }
+                    ]
+                  });
                   await alert.present();
                 }
               });
@@ -1140,9 +1066,7 @@ export class Tab2Page {
             }
           }
         }
-      }///fim função ler qrcode
-
+      } ///fim função ler qrcode
     });
   }
-}///fim página
-
+} ///fim página

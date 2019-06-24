@@ -47,19 +47,6 @@ export class Tab1Page {
     this.bdUser.banco
       .getItem('usuario')
       .then(data => this.usuario.push(data), error => console.error(error));
-
-    this.listaTela = [
-      {
-        prateleira: 'aaaaaaaa',
-        nome: 'chave',
-        codigo: "222222222",
-        quantidade: 5,
-        qtd_estoqueTotal: 200
-      }
-    ];
-
-    this.romaneio = 'romaneio';
-    this.empreiteira = 'empreiteira';
   }
 
   // ------------------------------------
@@ -1285,155 +1272,151 @@ export class Tab1Page {
 
             /// fim tem código e tem quantidade------------------------
           } else {
-            if (codigoClicado.replace(/\s/g, '') == codigoQrcode) {
+            if (codigoClicado.replace(/\s/g, '') === codigoQrcode) {
               /// inicio tem código e não tem quantidade
-              const alertQuantidade = await this.alertCtrl.create({
-                header: 'QUANTIDADE DO MATERIAL ' + codigoClicado,
-                message:
-                  'Insira manualmente a quantidade do material . Atenção, faltam separar ' +
-                  qtdClicado +
-                  ' unidade(s)',
-                inputs: [
-                  {
-                    name: 'quantiade',
-                    placeholder: 'quantidade',
-                    type: 'number'
-                  }
-                ],
-                buttons: [
-                  {
-                    text: 'confirmar',
-                    role: 'cancel',
-                    handler: async data => {
-                      const qtdDigitado: any = parseFloat(data.quantiade);
-                      alert(data.quantidade);////apagar
+                  const alert = await this.alertCtrl.create({
+      header: 'QUANTIDADE DO MATERIAL ' + codigoClicado,
+      inputs: [
+        {
+          name: 'quantidade',
+          type: 'number',
+          placeholder: 'quantidade'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        },
+        {
+          text: 'Ok',
+          handler: async data => {
+            const qtdDigitado: any = parseFloat(data.quantidade);
+            if (qtdEstoqueTotal_clicado >= qtdDigitado) {
+              if (qtdClicado >= qtdDigitado) {
+                this.lista.forEach(async element => {
+                  if (
+                    element.codigo.replace(/\s/g, '') === codigoQrcode &&
+                    element.prateleira.replace(/\s/g, '') === prateleira_clicada
+                  ) {
+                    const valorNovo: number = element.quantidade - qtdDigitado;
+                    const valorTotalSeparado: number = element.qtd_separada + qtdDigitado;
+                    const valorEstoqueNovo: number = element.qtd_estoqueTotal - qtdDigitado;
+                    element.quantidade = valorNovo;
+                    element.qtd_separada = valorTotalSeparado;
+                    element.qtd_estoqueTotal = valorEstoqueNovo;
+                    element.lidoManual = true;
 
-                      if (qtdEstoqueTotal_clicado >= qtdDigitado) {
-                        if (qtdClicado >= qtdDigitado) {
-                          this.lista.forEach(async element => {
-                            if (
-                              element.codigo.replace(/\s/g, '') === codigoQrcode &&
-                              element.prateleira.replace(/\s/g, '') === prateleira_clicada
-                            ) {
-                              const valorNovo: number = element.quantidade - qtdDigitado;
-                              const valorTotalSeparado: number = element.qtd_separada + qtdDigitado;
-                              const valorEstoqueNovo: number = element.qtd_estoqueTotal - qtdDigitado;
-                              element.quantidade = valorNovo;
-                              element.qtd_separada = valorTotalSeparado;
-                              element.qtd_estoqueTotal = valorEstoqueNovo;
-                              element.lidoManual = true;
+                    if (element.quantidade === 0) {
+                      console.log('MATERIAL ' + element.codigo + ' SEPARADO COM SUCESSO!!!!');
+                      repete = false;
+                    }
 
-                              if (element.quantidade === 0) {
-                                alert('MATERIAL ' + element.codigo + ' SEPARADO COM SUCESSO!!!!');
-                                repete = false;
-                              }
-
-                              if (element.quantidade > 0) {
-                                repete = false;
-                                const alert = await this.alertCtrl.create({
-                                  header: element.nome,
-                                  message: 'Faltam separar ' + element.quantidade + ' unidades',
-                                  buttons: [
-                                    // ---botao 1
-                                    {
-                                      text: 'CANCELAR',
-                                      role: 'calcel',
-                                      handler: () => {
-                                        repete = false;
-                                      }
-                                    },
-                                    // ---botao 2
-                                    {
-                                      text: 'CONTINUAR',
-                                      role: 'calcel',
-                                      handler: () => {
-                                        repete = true;
-                                        if (repete) {
-                                          this.lerQr(item);
-                                        }
-                                      }
-                                    }
-                                  ]
-                                });
-                                await alert.present();
+                    if (element.quantidade > 0) {
+                      repete = false;
+                      const alert = await this.alertCtrl.create({
+                        header: element.nome,
+                        message: 'Faltam separar ' + element.quantidade + ' unidades',
+                        buttons: [
+                          // ---botao 1
+                          {
+                            text: 'CANCELAR',
+                            role: 'calcel',
+                            handler: () => {
+                              repete = false;
+                            }
+                          },
+                          // ---botao 2
+                          {
+                            text: 'CONTINUAR',
+                            role: 'calcel',
+                            handler: () => {
+                              repete = true;
+                              if (repete) {
+                                this.lerQr(item);
                               }
                             }
-                          });
-
-                          // -----gravando alteração no storage
-
-                          this.banco
-                            .setItem('LISTA', this.lista)
-                            .then(
-                              () => console.log('Stored item!'),
-                              error => alert('Lista não gravada na memória interna -> ' + error)
-                            );
-                          this.listaTela = this.lista;
-                        }
-                        // -------------------------------------------------------------------------------
-                        /// inicio qtd clicado maior q do qr so com codigo e qtd
-                        if (qtdClicado < qtdDigitado) {
-                          repete = false;
-                          const alert = await this.alertCtrl.create({
-                            header: codigoClicado,
-                            message: 'Quantidade ultrapassa pedido',
-                            buttons: [
-                              // ---botao 1
-                              {
-                                text: 'CANCELA',
-                                role: 'calcel',
-                                handler: () => {
-                                  repete = false;
-                                }
-                              },
-                              // ---botao 2
-                              {
-                                text: 'CONFIRMAR ',
-                                role: 'calcel',
-                                handler: () => {
-                                  this.lista.forEach(element => {
-                                    if (
-                                      element.codigo.replace(/\s/g, '') === codigoQrcode &&
-                                      element.prateleira.replace(/\s/g, '') === prateleira_clicada
-                                    ) {
-                                      const valorNovo: number = element.quantidade - qtdDigitado;
-                                      const valorTotalSeparado: number =
-                                        element.qtd_separada + qtdDigitado;
-                                      const valorEstoqueNovo: number =
-                                        element.qtd_estoqueTotal - qtdDigitado;
-                                      element.quantidade = valorNovo;
-                                      element.qtd_separada = valorTotalSeparado;
-                                      element.qtd_estoqueTotal = valorEstoqueNovo;
-                                      element.lidoManual = true;
-                                    }
-                                  });
-                                  // -----gravando alteração no storage
-                                  this.banco
-                                    .setItem('LISTA', this.lista)
-                                    .then(() => console.log('Stored item!'));
-                                  this.listaTela = this.lista;
-                                }
-                              }
-                            ]
-                          });
-                          await alert.present();
-                        }
-
-                        // -------------------------------------------
-                      } else {
-                        alert(
-                          'QUANTIDADE DE ' + qtdDigitado + ' MAIOR QUE A DISPONIVEL NO DEPÓSITO.'
-                        );
-                        repete = false;
-                      }
-                      if (repete) {
-                        this.lerQr(item);
-                      }
+                          }
+                        ]
+                      });
+                      await alert.present();
                     }
                   }
-                ]
-              });
-              await alertQuantidade.present();
+                });
+
+                // -----gravando alteração no storage
+
+                this.banco
+                  .setItem('LISTA', this.lista)
+                  .then(
+                    () => console.log('Stored item!'),
+                    error => console.log('Lista não gravada na memória interna -> ' + error)
+                  );
+                this.listaTela = this.lista;
+              }
+              // -------------------------------------------------------------------------------
+              /// inicio qtd clicado maior q do qr so com codigo e qtd
+              if (qtdClicado < qtdDigitado) {
+                repete = false;
+                const alert = await this.alertCtrl.create({
+                  header: codigoClicado,
+                  message: 'Quantidade ultrapassa pedido',
+                  buttons: [
+                    // ---botao 1
+                    {
+                      text: 'CANCELA',
+                      role: 'calcel',
+                      handler: () => {
+                        repete = false;
+                      }
+                    },
+                    // ---botao 2
+                    {
+                      text: 'CONFIRMAR ',
+                      role: 'calcel',
+                      handler: () => {
+                        this.lista.forEach(element => {
+                          if (
+                            element.codigo.replace(/\s/g, '') === codigoQrcode &&
+                            element.prateleira.replace(/\s/g, '') === prateleira_clicada
+                          ) {
+                            const valorNovo: number = element.quantidade - qtdDigitado;
+                            const valorTotalSeparado: number = element.qtd_separada + qtdDigitado;
+                            const valorEstoqueNovo: number = element.qtd_estoqueTotal - qtdDigitado;
+                            element.quantidade = valorNovo;
+                            element.qtd_separada = valorTotalSeparado;
+                            element.qtd_estoqueTotal = valorEstoqueNovo;
+                            element.lidoManual = true;
+                          }
+                        });
+                        // -----gravando alteração no storage
+                        this.banco
+                          .setItem('LISTA', this.lista)
+                          .then(() => console.log('Stored item!'));
+                        this.listaTela = this.lista;
+                      }
+                    }
+                  ]
+                });
+                await alert.present();
+              }
+
+              // -------------------------------------------
+            } else {
+              repete = false;
+            }
+            if (repete) {
+              this.lerQr(item);
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
             } else {
               alert('CODIGO LIDO NÃO CONFERE');
               repete = false;
@@ -1524,7 +1507,6 @@ export class Tab1Page {
     alert(item);
   }
 
-
   public busca(ev: any): void {
     this.listaTela = this.lista;
     const val = ev.target.value;
@@ -1535,4 +1517,5 @@ export class Tab1Page {
       });
     }
   }
+
 }

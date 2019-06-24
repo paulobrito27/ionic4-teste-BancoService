@@ -34,7 +34,7 @@
           <p> Disponivel {{item.qtd_estoqueTotal}} </p>
           <ion-icon slot=start name="sync" class="icone" (click)="apaga(item)"></ion-icon>
           <ion-badge slot=end color="warning" class="icone">{{ item.quantidade }}</ion-badge>
-          <ion-icon slot=end name="md-barcode" class="icone" (click)="lerQr(item)"></ion-icon>
+          <ion-icon slot=end name="md-barcode" class="icone" (click)= " lerQr(item) "></ion-icon>
         </ion-item>
       </ion-list>
 
