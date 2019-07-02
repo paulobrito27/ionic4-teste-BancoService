@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
 import { BancoService } from '../service/banco.service';
-
-// teste
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { FileChooser } from '@ionic-native/file-chooser/ngx';
 import { ToastController, AlertController } from '@ionic/angular';
@@ -46,32 +44,7 @@ export class Tab2Page {
   ) {
     this.bdUser.banco
       .getItem('usuario')
-      .then(data => (this.usuario = data), error => console.error(error));
-    /**
-    this.lista2 = [
-      {
-        prateleira: 'aaaaaaaa',
-        nome: 'chave',
-        codigo: '15002640',
-        quantidade: 5,
-        qtd_estoqueTotal: 200
-      },
-      {
-        prateleira: 'aaaaaaaa',
-        nome: 'poste',
-        codigo: '20009088',
-        quantidade: 5,
-        qtd_estoqueTotal: 200
-      },
-      {
-        prateleira: 'aaaaaaaa',
-        nome: 'fusivel',
-        codigo: '20009777',
-        quantidade: 5,
-        qtd_estoqueTotal: 200
-      }
-    ];
-     */
+      .then(data => this.usuario.push(data), error => console.error(error));
   }
 
   public async opcoes2() {
@@ -236,10 +209,10 @@ export class Tab2Page {
           icon: 'ios-send-outline',
           role: 'destructive',
           handler: async () => {
-            let contagemTerminada: boolean = true;
+            let contagemTerminada = true;
 
             this.lista2.forEach(element => {
-              if (element.quantidade != element.qtd_contada) {
+              if (parseFloat(element.quantidade) !== parseFloat(element.qtd_contada)) {
                 contagemTerminada = false;
                 materialDivergente.push(element);
               }
@@ -281,7 +254,7 @@ export class Tab2Page {
                 this.mensagem.splice(0, tam);
               }
 
-              //trabalhando com a promisse do materialGedis
+              // trabalhando com a promisse do materialGedis
 
               if (temMatGedis > 0) {
                 this.materialgediss.forEach(element => {
@@ -295,9 +268,9 @@ export class Tab2Page {
                     this.mensagem.push(element2 + '\n');
                   });
                 });
-                //transforma um array em uma única string para ser enviado pelo email
+                // transforma um array em uma única string para ser enviado pelo email
                 mensagemNovaGedis = this.mensagem.join(' ');
-                //zera mensagem
+                // zera mensagem
                 let tam: number = this.mensagem.length;
                 this.mensagem.splice(0, tam);
               }
@@ -334,17 +307,22 @@ export class Tab2Page {
               this.mensagem.splice(0, tam);
 
               //tratando gedis e series vazios
-              if (mensagemNovaSeries == undefined) {
+              if (mensagemNovaSeries === undefined) {
                 mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
               }
-              if (mensagemNovaGedis == undefined) {
+              if (mensagemNovaGedis === undefined) {
                 mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
               }
-              if (materiaisLidosManualmente == undefined) {
+              if (materiaisLidosManualmente === undefined) {
                 materiaisLidosManualmente = '\n\nTodos os materiais foram lidos pelo QR-CODE.';
               }
 
-              //função de envio de email.....................................
+              this.emailComposer.isAvailable().then((available: boolean) => {
+                if (available) {
+                  //Now we know we can send
+                }
+              });
+              // -------------------------------------------------------------------------------------------------------------------------------
               let email = {
                 to: this.usuario[0].email,
                 cc: '',
@@ -362,7 +340,7 @@ export class Tab2Page {
                 body:
                   'Todos os materiais foram conferifos na sua totalidade com sucesso!!!!\n' +
                   '\n\n____________________________________________________________________________________________' +
-                  '\n\n\n\nRelação de materiais separados:\n' +
+                  '\n\n\n\nRelação de materiais separados: \n' +
                   mensagemMateriaisTotaisSeparados +
                   '\n\n---------------------------------------------------------------' +
                   '\n\n---------------------------------------------------------------' +
@@ -371,19 +349,19 @@ export class Tab2Page {
                   mensagemNovaGedis +
                   '\n\n\n\nMateriais lidos de forma manual:\n' +
                   materiaisLidosManualmente,
-                isHtml: false,
-                app: 'Gmail'
+                isHtml: true
               };
-              this.emailComposer.open(email);
-              //fim função email....................................................
 
+              // Send a text message using default options
+              this.emailComposer.open(email);
+              // -------------------------------------------------------------------------------------------------------------------------------
               this.recontagem = false; //zera a recontagem para default.
             } else {
               ///INICIO ENVIO COM ERRO-----------------------------------------------------------
               //----------------------------- ENVIA EMAIL SEM TERMINO--------------------------------------------
               let alert1 = await this.alertCtrl.create({
                 header:
-                  'EXISTEM DIVERGÊNCIAS NO RECEBIMENTO, A PRIMEIRA RECONTAGEM É OBRIGATÓRIA!!',
+                  'EXISTEM DIVERGENCIAS NO RECEBIMENTO, A PRIMEIRA RECONTAGEM É OBRIGATÓRIA!!',
                 message: 'MATERIAIS DIVERGENTES: ' + divergencia,
                 buttons: [
                   //---botao 1
@@ -555,6 +533,11 @@ export class Tab2Page {
                         }
 
                         //função de envio de email.....................................
+                        this.emailComposer.isAvailable().then((available: boolean) => {
+                          if (available) {
+                          }
+                        });
+
                         let email = {
                           to: this.usuario[0].email,
                           cc: '',
@@ -581,8 +564,7 @@ export class Tab2Page {
                             mensagemNovaGedis +
                             '\n\n\n\nMateriais lidos de forma manual:\n' +
                             materiaisLidosManualmente,
-                          isHtml: false,
-                          app: 'Gmail'
+                          isHtml: true
                         };
                         this.emailComposer.open(email);
                         //fim função email....................................................

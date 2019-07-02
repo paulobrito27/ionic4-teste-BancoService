@@ -586,8 +586,7 @@ export class Tab1Page {
                           mensagemNovaGedis +
                           '\n\n\n\nMateriais lidos de forma manual:\n' +
                           materiaisLidosManualmente,
-                        isHtml: false,
-                        app: 'Gmail'
+                        isHtml: true,
                       };
                       this.emailComposer.open(email);
 
