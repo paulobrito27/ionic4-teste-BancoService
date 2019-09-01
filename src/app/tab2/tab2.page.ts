@@ -220,7 +220,7 @@ export class Tab2Page {
 
             //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
             materialDivergente.forEach(element => {
-              this.mensagem.push('\n\n' + element.codigo + ' ; ');
+              this.mensagem.push("<br/><br/>" + element.codigo + " ; ");
             });
             //transforma um array em uma única string para ser enviado pelo email
             divergencia = this.mensagem.join(' ');
@@ -240,15 +240,15 @@ export class Tab2Page {
               if (temMatSerie > 0) {
                 this.materialSeries.forEach(element => {
                   this.mensagem.push(
-                    '\n------------SERIES-----------------\nCódigo: ' + element.codigo + ' .\n'
+                    "<br/>------------SERIES-----------------<br/>Código: " + element.codigo + " .<br/>"
                   );
-                  let mensagemSerie = element.series.split(',');
+                  let mensagemSerie = element.series.split(",");
                   mensagemSerie.forEach(element2 => {
-                    this.mensagem.push(element2 + '\n');
+                    this.mensagem.push(element2 + "<br/>");
                   });
                 });
                 //transforma um array em uma única string para ser enviado pelo email
-                mensagemNovaSeries = this.mensagem.join(' ');
+                mensagemNovaSeries = this.mensagem.join(" ");
                 //zera mensagem
                 let tam: number = this.mensagem.length;
                 this.mensagem.splice(0, tam);
@@ -259,17 +259,17 @@ export class Tab2Page {
               if (temMatGedis > 0) {
                 this.materialgediss.forEach(element => {
                   this.mensagem.push(
-                    '\n------------GEDIS-----------------\nMATERIAL código: ' +
+                    "<br/>------------GEDIS-----------------<br/>MATERIAL código: " +
                       element.codigo +
-                      ' .\n\n'
+                      " .<br/><br/>"
                   );
-                  let mensGedis = element.gedis.split(',');
+                  let mensGedis = element.gedis.split(",");
                   mensGedis.forEach((element2: string) => {
-                    this.mensagem.push(element2 + '\n');
+                    this.mensagem.push(element2 + "<br/>");
                   });
                 });
                 // transforma um array em uma única string para ser enviado pelo email
-                mensagemNovaGedis = this.mensagem.join(' ');
+                mensagemNovaGedis = this.mensagem.join(" ");
                 // zera mensagem
                 let tam: number = this.mensagem.length;
                 this.mensagem.splice(0, tam);
@@ -278,16 +278,16 @@ export class Tab2Page {
               //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
               this.lista2.forEach(element => {
                 this.mensagem.push(
-                  '\n\n' +
+                  "<br/><br/>" +
                     element.codigo +
-                    ' ' +
+                    "  "  +
                     element.nome +
-                    '\n contados -> ' +
+                    "<br/> contados -> " +
                     element.qtd_contada
                 );
               });
               //transforma um array em uma única string para ser enviado pelo email
-              mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
+              mensagemMateriaisTotaisSeparados = this.mensagem.join(" ");
               //zera mensagem
               let tam: number = this.mensagem.length;
               this.mensagem.splice(0, tam);
@@ -296,25 +296,25 @@ export class Tab2Page {
               this.lista2.forEach(element => {
                 if (element.lidoManual == true) {
                   this.mensagem.push(
-                    '\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual'
+                    "<br/><br/>" + element.codigo + "   "   + element.nome + " foi lido de maneira manual"
                   );
                 }
               });
               //transforma um array em uma única string para ser enviado pelo email
-              materiaisLidosManualmente = this.mensagem.join(' ');
+              materiaisLidosManualmente = this.mensagem.join(" ");
               //zera mensagem
               tam = this.mensagem.length;
               this.mensagem.splice(0, tam);
 
               //tratando gedis e series vazios
               if (mensagemNovaSeries === undefined) {
-                mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
+                mensagemNovaSeries = "<br/>Não existem materiais que tenham n° de série";
               }
               if (mensagemNovaGedis === undefined) {
-                mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
+                mensagemNovaGedis = "<br/>Não existem materiais que tenham n° de gedis";
               }
               if (materiaisLidosManualmente === undefined) {
-                materiaisLidosManualmente = '\n\nTodos os materiais foram lidos pelo QR-CODE.';
+                materiaisLidosManualmente = "<br/><br/>Todos os materiais foram lidos pelo QR-CODE.";
               }
 
               this.emailComposer.isAvailable().then((available: boolean) => {
@@ -329,25 +329,25 @@ export class Tab2Page {
                 bcc: [],
                 attachments: [],
                 subject:
-                  'Romaneio n° ' +
+                  "Romaneio n° " +
                   this.romaneio +
-                  '  conferido com sucesso por ' +
-                  'Colaborador: ' +
+                  " conferido com sucesso por " +
+                  "Colaborador: "+
                   this.usuario[0].nome +
-                  '\n' +
-                  'Registro: ' +
+                  "<br/>" +
+                  "Registro: " +
                   this.usuario[0].registro,
                 body:
-                  'Todos os materiais foram conferifos na sua totalidade com sucesso!!!!\n' +
-                  '\n\n____________________________________________________________________________________________' +
-                  '\n\n\n\nRelação de materiais separados: \n' +
+                  "Todos os materiais foram conferifos na sua totalidade com sucesso!!!!<br/>" +
+                  "<br/><br/>____________________________________________________________________________________________" +
+                  "<br/><br/><br/><br/>Relação de materiais separados: <br/>" +
                   mensagemMateriaisTotaisSeparados +
-                  '\n\n---------------------------------------------------------------' +
-                  '\n\n---------------------------------------------------------------' +
-                  +'\n\n\nLista de Gedis/Series dos materiais separados: \n\n\n\n' +
+                  "<br/><br/>---------------------------------------------------------------" +
+                  "<br/><br/>---------------------------------------------------------------"+
+                  "<br/><br/><br/>Lista de Gedis/Series dos materiais separados: <br/><br/><br/><br/>"+
                   mensagemNovaSeries +
                   mensagemNovaGedis +
-                  '\n\n\n\nMateriais lidos de forma manual:\n' +
+                  "<br/><br/><br/><br/>Materiais lidos de forma manual:<br/>"+
                   materiaisLidosManualmente,
                 isHtml: true
               };
@@ -428,18 +428,18 @@ export class Tab2Page {
                         if (temMatSerie > 0) {
                           this.materialSeries.forEach(element => {
                             this.mensagem.push(
-                              '\n------------SERIES-----------------\n' +
-                                'Código: ' +
+                              "<br/>------------SERIES-----------------<br/>" +
+                                "Código: " +
                                 element.codigo +
-                                ' .\n'
+                                " .<br/>"
                             );
-                            let mensagemSerie = element.series.split(',');
+                            let mensagemSerie = element.series.split(",");
                             mensagemSerie.forEach(element2 => {
-                              this.mensagem.push(element2 + '\n');
+                              this.mensagem.push(element2 + "<br/>");
                             });
                           });
                           //transforma um array em uma única string para ser enviado pelo email
-                          mensagemNovaSeries = this.mensagem.join(' ');
+                          mensagemNovaSeries = this.mensagem.join(" ");
                           //zera mensagem
                           let tam: number = this.mensagem.length;
                           this.mensagem.splice(0, tam);
@@ -450,17 +450,17 @@ export class Tab2Page {
                         if (temMatGedis > 0) {
                           this.materialgediss.forEach(element => {
                             this.mensagem.push(
-                              '\n------------GEDIS-----------------\nMATERIAL código: ' +
+                              "<br/>------------GEDIS-----------------<br/>MATERIAL código: " +
                                 element.codigo +
-                                ' .\n\n'
+                                "<br/><br/>"
                             );
-                            let mensGedis = element.gedis.split(',');
+                            let mensGedis = element.gedis.split(",");
                             mensGedis.forEach((element2: string) => {
-                              this.mensagem.push(element2 + '\n');
+                              this.mensagem.push(element2 + "<br/>");
                             });
                           });
                           //transforma um array em uma única string para ser enviado pelo email
-                          mensagemNovaGedis = this.mensagem.join(' ');
+                          mensagemNovaGedis = this.mensagem.join(" ");
                           //zera mensagem
                           let tam: number = this.mensagem.length;
                           this.mensagem.splice(0, tam);
@@ -469,16 +469,16 @@ export class Tab2Page {
                         //trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
                         this.lista2.forEach(element => {
                           this.mensagem.push(
-                            '\n\n' +
+                            "<br/><br/>" +
                               element.codigo +
-                              ' ' +
+                              "  "  +
                               element.nome +
-                              '\n contados -> ' +
+                              "<br/> contados -> " +
                               element.qtd_contada
                           );
                         });
                         //transforma um array em uma única string para ser enviado pelo email
-                        mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
+                        mensagemMateriaisTotaisSeparados = this.mensagem.join(" ");
                         //zera mensagem
                         let tam: number = this.mensagem.length;
                         this.mensagem.splice(0, tam);
@@ -486,18 +486,18 @@ export class Tab2Page {
                         //trabalhando com a lista para enviar mensagem de todos materiais que tiveram divergencias
                         materialDivergente.forEach(element => {
                           this.mensagem.push(
-                            '\n\n' +
+                            "<br/><br/>" +
                               element.codigo +
-                              ' ' +
+                              "  " +
                               element.nome +
-                              '\n contados -> ' +
+                              "<br/> contados -> " +
                               element.qtd_contada +
-                              '\n qtd documento -> ' +
+                              "<br/> qtd documento -> " +
                               element.quantidade
                           );
                         });
                         //transforma um array em uma única string para ser enviado pelo email
-                        mensagemMateriaisComDivergencia = this.mensagem.join(' ');
+                        mensagemMateriaisComDivergencia = this.mensagem.join(" ");
                         //zera mensagem
                         tam = this.mensagem.length;
                         this.mensagem.splice(0, tam);
@@ -506,30 +506,30 @@ export class Tab2Page {
                         this.lista2.forEach(element => {
                           if (element.lidoManual == true) {
                             this.mensagem.push(
-                              '\n\n' +
+                              "<br/><br/>" +
                                 element.codigo +
-                                '  ' +
+                                "   "   +
                                 element.nome +
-                                ' foi lido de maneira manual'
+                                " foi lido de maneira manual"
                             );
                           }
                         });
                         //transforma um array em uma única string para ser enviado pelo email
-                        materiaisLidosManualmente = this.mensagem.join(' ');
+                        materiaisLidosManualmente = this.mensagem.join(" ");
                         //zera mensagem
                         tam = this.mensagem.length;
                         this.mensagem.splice(0, tam);
 
                         //tratando gedis e series vazios
                         if (mensagemNovaSeries == undefined) {
-                          mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
+                          mensagemNovaSeries = "<br/>Não existem materiais que tenham n° de série";
                         }
                         if (mensagemNovaGedis == undefined) {
-                          mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
+                          mensagemNovaGedis = "<br/>Não existem materiais que tenham n° de gedis";
                         }
                         if (materiaisLidosManualmente == undefined) {
                           materiaisLidosManualmente =
-                            '\n\nTodos os materiais foram lidos pelo QR-CODE.';
+                            "<br/><br/>Todos os materiais foram lidos pelo QR-CODE.";
                         }
 
                         //função de envio de email.....................................
@@ -544,25 +544,25 @@ export class Tab2Page {
                           bcc: [],
                           attachments: [],
                           subject:
-                            'Romaneio n°' +
+                            "Romaneio n°" +
                             this.romaneio +
-                            ' contado com divergências. ' +
-                            'Colaborador: ' +
+                            " contado com divergências. "+
+                            "Colaborador: "+
                             this.usuario[0].nome +
-                            '\n' +
-                            ' Registro: ' +
+                            "<br/>" +
+                            " Registro:  "+
                             this.usuario[0].registro,
                           body:
-                            'Lista de materiais separados:\n' +
+                            "Lista de materiais separados:<br/>" +
                             mensagemMateriaisTotaisSeparados +
-                            '\n\n\n____________________________________________________________________________________________' +
-                            '\n\nMATERIAIS COM DIVERGÊNCIA NA CONFERÊNCIA: \n\n' +
+                            "<br/><br/><br/>____________________________________________________________________________________________"+
+                            "<br/><br/>MATERIAIS COM DIVERGÊNCIA NA CONFERÊNCIA: <br/><br/>" +
                             mensagemMateriaisComDivergencia +
-                            '\n\n____________________________________________________________________________________________' +
-                            '\n\n\nLista de Gedis/Series dos materiais separados: \n' +
+                            "<br/><br/>____________________________________________________________________________________________" +
+                            "<br/><br/><br/>Lista de Gedis/Series dos materiais separados: <br/>" +
                             mensagemNovaSeries +
                             mensagemNovaGedis +
-                            '\n\n\n\nMateriais lidos de forma manual:\n' +
+                            "<br/><br/><br/><br/>Materiais lidos de forma manual:<br/>" +
                             materiaisLidosManualmente,
                           isHtml: true
                         };

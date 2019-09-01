@@ -270,15 +270,15 @@ export class Tab1Page {
               if (temMatSerie > 0) {
                 this.materialSeries.forEach(element => {
                   this.mensagem.push(
-                    '\n------------SERIES-----------------\nCódigo: ' + element.codigo + ' .\n'
+                    "<br/>------------SERIES-----------------<br/>Código: " + element.codigo + " .<br/>"
                   );
-                  const mensSerie = element.series.split(',');
+                  const mensSerie = element.series.split(",");
                   mensSerie.forEach(element2 => {
-                    this.mensagem.push(element2 + '\n');
+                    this.mensagem.push(element2 + "<br/>");
                   });
                 });
                 // transforma um array em uma única string para ser enviado pelo email
-                mensagemNovaSeries = this.mensagem.join(' ');
+                mensagemNovaSeries = this.mensagem.join(" ");
                 // zera mensagem
                 // tslint:disable-next-line: no-shadowed-variable
                 const tam: number = this.mensagem.length;
@@ -290,17 +290,17 @@ export class Tab1Page {
               if (temMatGedis > 0) {
                 this.materialgediss.forEach(element => {
                   this.mensagem.push(
-                    '\n------------GEDIS-----------------\nMATERIAL código: ' +
+                    "<br/>------------GEDIS-----------------<br/>MATERIAL código: " +
                       element.codigo +
-                      ' .\n\n'
+                      " .<br/><br/>"
                   );
-                  const mensGedis = element.gedis.split(',');
+                  const mensGedis = element.gedis.split(",");
                   mensGedis.forEach(element2 => {
-                    this.mensagem.push(element2 + '\n');
+                    this.mensagem.push(element2 + "<br/>");
                   });
                 });
                 // transforma um array em uma única string para ser enviado pelo email
-                mensagemNovaGedis = this.mensagem.join(' ');
+                mensagemNovaGedis = this.mensagem.join(" ");
                 // zera mensagem
                 // tslint:disable-next-line: no-shadowed-variable
                 const tam: number = this.mensagem.length;
@@ -310,16 +310,16 @@ export class Tab1Page {
               // trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
               this.lista.forEach(element => {
                 this.mensagem.push(
-                  '\n\n' +
+                  "<br/><br/>" +
                     element.codigo +
-                    ' ' +
+                    "  " +
                     element.nome +
-                    '\n quantidade separada -> ' +
+                    "<br/> quantidade separada -> " +
                     element.qtd_separada
                 );
               });
               // transforma um array em uma única string para ser enviado pelo email
-              mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
+              mensagemMateriaisTotaisSeparados = this.mensagem.join(" ");
               // zera mensagem
               let tam: number = this.mensagem.length;
               this.mensagem.splice(0, tam);
@@ -329,7 +329,7 @@ export class Tab1Page {
                 // tslint:disable-next-line: triple-equals
                 if (element.lidoManual == true) {
                   this.mensagem.push(
-                    '\n\n' + element.codigo + '  ' + element.nome + ' foi lido de maneira manual'
+                    "<br/><br/>" + element.codigo + "    "   + element.nome + " foi lido de maneira manual"
                   );
                 }
               });
@@ -342,15 +342,15 @@ export class Tab1Page {
               // tratando gedis e series vazios
               // tslint:disable-next-line: triple-equals
               if (mensagemNovaSeries == undefined) {
-                mensagemNovaSeries = '\nNão existem materiais que tenham n° de série';
+                mensagemNovaSeries = "<br/>Não existem materiais que tenham n° de série";
               }
               // tslint:disable-next-line: triple-equals
               if (mensagemNovaGedis == undefined) {
-                mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis';
+                mensagemNovaGedis = "<br/>Não existem materiais que tenham n° de gedis";
               }
               // tslint:disable-next-line: triple-equals
               if (materiaisLidosManualmente == undefined) {
-                materiaisLidosManualmente = '\n\nTodos os materiais foram lidos pelo QR-CODE.';
+                materiaisLidosManualmente = "<br/><br/>Todos os materiais foram lidos pelo QR-CODE.";
               }
 
               // função de envio de email.....................................
@@ -364,25 +364,25 @@ export class Tab1Page {
                 bcc: [],
                 attachments: [],
                 subject:
-                  'Romaneio n°' +
+                  "Romaneio n°" +
                   this.romaneio +
-                  '  separado com sucesso ' +
-                  ' Colaborador: ' +
+                  "  separado com sucesso "+
+                  " Colaborador: " +
                   this.usuario[0].nome +
-                  '\n' +
-                  ' Registro: ' +
+                  "<br/>" +
+                  " Registro: " +
                   this.usuario[0].registro,
                 body:
-                  'Todos os materiais foram separados na sua totalidade co sucesso!!!!' +
-                  '\n\n____________________________________________________________________________________________' +
-                  '\n\n\n\nRelação de materiais separados:\n' +
+                  "Todos os materiais foram separados na sua totalidade co sucesso!!!!" +
+                  "<br/><br/>____________________________________________________________________________________________" +
+                  "<br/><br/><br/><br/>Relação de materiais separados:<br/>" +
                   mensagemMateriaisTotaisSeparados +
-                  '\n\n---------------------------------------------------------------' +
-                  '\n\n---------------------------------------------------------------' +
-                  +'\n\n\nLista de Gedis/Series dos materiais separados: \n\n\n\n' +
+                  "<br/><br/>---------------------------------------------------------------" +
+                  "<br/><br/>---------------------------------------------------------------" +
+                  +"<br/><br/><br/>Lista de Gedis/Series dos materiais separados: <br/><br/><br/><br/>" +
                   mensagemNovaSeries +
                   mensagemNovaGedis +
-                  '\n\n\n\nMateriais lidos de forma manual:\n' +
+                  "<br/><br/><br/><br/>Materiais lidos de forma manual:<br/>" +
                   materiaisLidosManualmente,
                 isHtml: true
               };
@@ -423,17 +423,17 @@ export class Tab1Page {
                       if (temMatSerie > 0) {
                         this.materialSeries.forEach(element => {
                           this.mensagem.push(
-                            '\n------------SERIES-----------------\n\nCódigo: ' +
+                            "<br/>------------SERIES-----------------<br/><br/>Código: " +
                               element.codigo +
-                              ' .\n'
+                              " .<br/>"
                           );
-                          const mensSerie = element.series.split(',');
+                          const mensSerie = element.series.split(",");
                           mensSerie.forEach(element2 => {
-                            this.mensagem.push(element2 + '\n');
+                            this.mensagem.push(element2 + '<br/>');
                           });
                         });
                         // transforma um array em uma única string para ser enviado pelo email
-                        mensagemNovaSeries = this.mensagem.join(' ');
+                        mensagemNovaSeries = this.mensagem.join(" ");
                         // zera mensagem
                         // tslint:disable-next-line: no-shadowed-variable
                         const tam: number = this.mensagem.length;
@@ -445,17 +445,17 @@ export class Tab1Page {
                       if (temMatGedis > 0) {
                         this.materialgediss.forEach(element => {
                           this.mensagem.push(
-                            '\n------------GEDIS-----------------\n\nMATERIAL código: ' +
+                            "<br/>------------GEDIS-----------------<br/><br/>MATERIAL código: " +
                               element.codigo +
-                              ' .\n\n'
+                              " .<br/><br/>"
                           );
-                          const mensGedis = element.gedis.split(',');
+                          const mensGedis = element.gedis.split(",");
                           mensGedis.forEach(element2 => {
-                            this.mensagem.push(element2 + '\n');
+                            this.mensagem.push(element2 + "<br/>");
                           });
                         });
                         // transforma um array em uma única string para ser enviado pelo email
-                        mensagemNovaGedis = this.mensagem.join(' ');
+                        mensagemNovaGedis = this.mensagem.join(" ");
                         // zera mensagem
                         // tslint:disable-next-line: no-shadowed-variable
                         const tam: number = this.mensagem.length;
@@ -467,16 +467,16 @@ export class Tab1Page {
                         // tslint:disable-next-line: triple-equals
                         if (element.lidoManual == true) {
                           this.mensagem.push(
-                            '\n\n' +
+                            "<br/><br/>" +
                               element.codigo +
-                              '  ' +
+                              "   "  +
                               element.nome +
-                              ' foi lido de maneira manual'
+                              " foi lido de maneira manual"
                           );
                         }
                       });
                       // transforma um array em uma única string para ser enviado pelo email
-                      materiaisLidosManualmente = this.mensagem.join(' ');
+                      materiaisLidosManualmente = this.mensagem.join(" ");
                       // zera mensagem
                       let tam: number = this.mensagem.length;
                       this.mensagem.splice(0, tam);
@@ -484,16 +484,16 @@ export class Tab1Page {
                       // tratando gedis e series vazios
                       // tslint:disable-next-line: triple-equals
                       if (mensagemNovaSeries == undefined) {
-                        mensagemNovaSeries = '\nNão existem materiais que tenham n° de série\n\n';
+                        mensagemNovaSeries = "<br/>Não existem materiais que tenham n° de série<br/><br/>";
                       }
                       // tslint:disable-next-line: triple-equals
                       if (mensagemNovaGedis == undefined) {
-                        mensagemNovaGedis = '\nNão existem materiais que tenham n° de gedis\n\n\n';
+                        mensagemNovaGedis = "<br/>Não existem materiais que tenham n° de gedis<br/><br/><br/>";
                       }
                       // tslint:disable-next-line: triple-equals
                       if (materiaisLidosManualmente == undefined) {
                         materiaisLidosManualmente =
-                          '\n\nTodos os materiais foram lidos pelo QR-CODE.';
+                          "<br/><br/>Todos os materiais foram lidos pelo QR-CODE.";
                       }
 
                       // trabalhando com materiais com quantidades faltantes
@@ -501,16 +501,16 @@ export class Tab1Page {
                         if (element.quantidade > 0) {
                           let falta = element.quantidade;
                           this.mensagem.push(
-                            '\nCódigo: ' +
+                            "<br/>Código: " +
                               element.codigo +
-                              ' faltou -> ' +
+                              " faltou -> " +
                               falta +
-                              ' unidade(s) .\n\n'
+                              " unidade(s) .<br/><br/>"
                           );
                         }
                       });
                       // transforma um array em uma única string para ser enviado pelo email
-                      mensagem_Material_inferior = this.mensagem.join(' ');
+                      mensagem_Material_inferior = this.mensagem.join(" ");
                       // zera mensagem
                       tam = this.mensagem.length;
                       this.mensagem.splice(0, tam);
@@ -520,16 +520,16 @@ export class Tab1Page {
                         if (element.quantidade < 0) {
                           let sobra = element.quantidade * -1;
                           this.mensagem.push(
-                            '\nCódigo: ' +
+                            "<br/>Código: " +
                               element.codigo +
-                              '  separados à mais -> ' +
+                              "  separados à mais -> " +
                               sobra +
-                              ' unidade(s) .\n\n'
+                              " unidade(s) .<br/><br/>"
                           );
                         }
                       });
                       // transforma um array em uma única string para ser enviado pelo email
-                      mensagem_Material_superior = this.mensagem.join(' ');
+                      mensagem_Material_superior = this.mensagem.join(" ");
                       // zera mensagem
                       tam = this.mensagem.length;
                       this.mensagem.splice(0, tam);
@@ -537,16 +537,16 @@ export class Tab1Page {
                       // trabalhando com a lista para enviar mensagem de todos materiais que foram separados e suas quantidades
                       this.lista.forEach(element => {
                         this.mensagem.push(
-                          '\n\n' +
+                          "<br/><br/>" +
                             element.codigo +
-                            ' ' +
+                            "   "  +
                             element.nome +
-                            '\n quantidade separada -> ' +
+                            "<br/> quantidade separada -> " +
                             element.qtd_separada
                         );
                       });
                       // transforma um array em uma única string para ser enviado pelo email
-                      mensagemMateriaisTotaisSeparados = this.mensagem.join(' ');
+                      mensagemMateriaisTotaisSeparados = this.mensagem.join(" ");
                       // zera mensagem
                       tam = this.mensagem.length;
                       this.mensagem.splice(0, tam);
@@ -563,28 +563,28 @@ export class Tab1Page {
                         bcc: [],
                         attachments: [],
                         subject:
-                          'Romaneio n°' +
+                          "Romaneio n°" +
                           this.romaneio +
-                          ' COM DIVERGÊNCIAS ' +
-                          ' Colaborador: ' +
+                          " COM DIVERGÊNCIAS " +
+                          " Colaborador: " +
                           this.usuario[0].nome +
-                          '\n' +
-                          ' Registro: ' +
+                          "<br/>" +
+                          " Registro: " +
                           this.usuario[0].registro,
                         body:
-                          'Lista de materiais separados:\n' +
+                          "Lista de materiais separados:<br/>" +
                           mensagemMateriaisTotaisSeparados +
-                          '\n\n____________________________________________________________________________________________' +
-                          '\n\n\n\nFaltou realizar a separação dos seguintes materiais :\n\n' +
+                          "<br/><br/>____________________________________________________________________________________________" +
+                          "<br/><br/><br/><br/>Faltou realizar a separação dos seguintes materiais :<br/><br/>" +
                           mensagem_Material_inferior +
-                          '\n\n____________________________________________________________________________________________' +
-                          '\n\n\nMateriais separados com quantidade superior à do ROMANEIO:\n' +
+                          "<br/><br/>____________________________________________________________________________________________" +
+                          "<br/><br/><br/>Materiais separados com quantidade superior à do ROMANEIO:<br/>" +
                           mensagem_Material_superior +
-                          '\n\n____________________________________________________________________________________________' +
-                          '\n\n\nLista de Gedis/Series dos materiais separados: \n' +
+                          "<br/><br/>____________________________________________________________________________________________" +
+                          "<br/><br/><br/>Lista de Gedis/Series dos materiais separados: <br/>" +
                           mensagemNovaSeries +
                           mensagemNovaGedis +
-                          '\n\n\n\nMateriais lidos de forma manual:\n' +
+                          "<br/><br/><br/><br/>Materiais lidos de forma manual:<br/>" +
                           materiaisLidosManualmente,
                         isHtml: true,
                       };
